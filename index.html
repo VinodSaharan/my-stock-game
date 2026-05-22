@@ -3,570 +3,115 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>अल्टीमेट ट्रेडिंग सिम्युलेटर प्रो v3.1 📈🏦</title>
-    <!-- चार्ट्स के लिए Chart.js लाइब्रेरी -->
+    <title>लक्ष्य 22 | Lakshya 22 - ट्रेडिंग सिम्युलेटर v22.0</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
-            --bg-color: #040811;
-            --card-bg: #0f172a;
-            --text-color: #f1f5f9;
+            --bg-color: #020617;
+            --card-bg: rgba(15, 23, 42, 0.75);
+            --text-color: #f8fafc;
             --green: #10b981;
             --red: #ef4444;
-            --gold: #f59e0b;
-            --neon-blue: #06b6d4;
-            --purple: #a855f7;
-            --orange: #f97316;
-            --blue: #3b82f6;
+            --gold: #fbbf24;
+            --border: rgba(255, 255, 255, 0.08);
+            --lucky-color: #f43f5e;
         }
 
-        body {
-            font-family: 'Segoe UI', Arial, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            justify-content: center;
-        }
-
-        /* 🧩 पूरे लेआउट को दो हिस्सों में बांटने के लिए मेन रैपर */
-        .main-wrapper {
-            display: flex;
-            max-width: 1300px;
-            width: 100%;
-            gap: 20px;
-        }
-
-        /* 👈 लेफ्ट साइड (गेम का मुख्य हिस्सा) */
-        .container { 
-            flex: 1; 
-            min-width: 0; /* फ्लेक्स बॉक्स को टूटने से बचाने के लिए */
-        }
-
-        .header-title { text-align: center; color: var(--gold); font-size: 2.3rem; margin: 0 0 15px 0; text-shadow: 0 0 15px rgba(245, 158, 11, 0.4); }
+        body { font-family: 'Segoe UI', sans-serif; background-color: var(--bg-color); color: var(--text-color); margin: 0; padding: 20px; display: flex; justify-content: center; }
+        .main-wrapper { max-width: 1400px; width: 100%; }
+        .header-title { text-align: center; color: var(--gold); font-size: 2.5rem; margin-bottom: 20px; text-shadow: 0 0 20px rgba(251, 191, 36, 0.4); }
         
-        /* 👉 राइट साइड (न्यूज़ बॉक्स हमेशा साइड में रहेगा) */
-        .scam-ticker {
-            width: 280px;
-            background-color: #0f172a;
-            border: 2px solid var(--neon-blue);
-            color: #e2e8f0;
-            padding: 18px;
-            border-radius: 12px;
-            font-weight: bold;
-            font-size: 0.95rem;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.6);
-            line-height: 1.5;
-            transition: border-color 0.3s ease;
-            align-self: flex-start; /* अपनी जगह पर टिका रहेगा */
-            position: sticky;
-            top: 20px;
-        }
+        .dashboard { display: grid; grid-template-columns: repeat(5, 1fr); gap: 15px; margin-bottom: 20px; }
+        .stat-card { background: var(--card-bg); padding: 15px; border-radius: 12px; text-align: center; border: 1px solid var(--border); }
+        .stat-value { font-size: 1.2rem; font-weight: bold; color: var(--gold); margin-top: 5px; }
 
-        .dashboard {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 12px;
-            margin-bottom: 20px;
-        }
-
-        .stat-card {
-            background-color: var(--card-bg);
-            padding: 12px;
-            border-radius: 8px;
-            text-align: center;
-            border: 1px solid #1e293b;
-        }
-
-        .stat-value { font-size: 1.1rem; font-weight: bold; color: var(--gold); }
+        .market-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
+        .stock-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 16px; padding: 15px; }
         
-        .qty-input, .select-input {
-            background-color: #020617;
-            color: #fff;
-            border: 1px solid var(--neon-blue);
-            padding: 6px;
-            border-radius: 6px;
-            font-size: 0.9rem;
-            width: 100%;
-            box-sizing: border-box;
-            text-align: center;
-        }
-
-        .control-panel {
-            background: linear-gradient(135deg, #0f172a, #1e1b4b);
-            padding: 15px;
-            border-radius: 12px;
-            text-align: center;
-            margin-bottom: 20px;
-            border: 2px solid var(--purple);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 15px;
-            flex-wrap: wrap;
-        }
-
-        .btn {
-            font-size: 0.85rem;
-            font-weight: bold;
-            padding: 10px 14px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .btn-buy { background-color: var(--green); color: white; }
-        .btn-short { background-color: var(--red); color: white; }
-        .btn-gamble { background: linear-gradient(45deg, #10b981, #059669); color: white; }
-        .btn-loan { background-color: var(--purple); color: white; }
-        .btn-repay { background-color: var(--orange); color: white; }
-        .btn-fd-in { background-color: var(--blue); color: white; }
-        .btn-fd-out { background-color: #b91c1c; color: white; }
-        .btn-reset { background-color: #475569; color: white; border: 1px solid #64748b; }
-
-        .market-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
-        }
-
-        .stock-card {
-            background-color: var(--card-bg);
-            border: 1px solid #1e293b;
-            border-radius: 12px;
-            padding: 15px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .stock-header { display: flex; justify-content: space-between; align-items: center; }
-        .stock-name { font-size: 1.1rem; font-weight: bold; }
-        .stock-price { font-size: 1.2rem; font-weight: bold; }
+        .btn { padding: 10px 15px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; }
+        .btn-buy { background: var(--green); color: white; }
+        .btn-short { background: var(--red); color: white; }
         
-        .price-up { color: var(--green); }
-        .price-down { color: var(--red); }
-
-        .chart-container { position: relative; height: 110px; width: 100%; }
-
-        .stock-actions { display: flex; justify-content: space-between; align-items: center; margin-top: 5px; }
-        .holding-badge { background: #1e293b; padding: 4px 10px; border-radius: 6px; font-size: 0.85rem; }
-
-        .log-box {
-            background-color: #020617;
-            border: 1px solid #1e293b;
-            border-radius: 8px;
-            padding: 15px;
-            margin-top: 20px;
-            height: 120px;
-            overflow-y: auto;
-            font-family: monospace;
-            font-size: 0.85rem;
-            color: #a5f3fc;
-        }
-
-        /* 📱 अगर कोई मोबाइल में खोले तो न्यूज़ अपने आप वापस ऊपर/नीचे सेट हो जाएगी */
-        @media (max-width: 800px) {
-            .main-wrapper { flex-direction: column; }
-            .scam-ticker { width: auto; position: static; order: -1; margin-bottom: 15px; }
-        }
+        .log-box { background: #000; border: 1px solid var(--border); padding: 15px; height: 100px; overflow-y: auto; margin-top: 20px; font-family: monospace; color: #38bdf8; }
     </style>
 </head>
 <body>
 
-<!-- 🧩 नया फ्लेक्स बॉक्स कंटेनर -->
 <div class="main-wrapper">
+    <h1 class="header-title">📈 लक्ष्य 22 [LAKSHYA 22] 👑</h1>
 
-    <!-- 👈 लेफ्ट साइड (पूरा गेमप्ले) -->
-    <div class="container">
-        <header>
-            <h1 class="header-title">📈 अल्टीमेट Trading सिम्युलेटर प्रो v3.1 🏦</h1>
-        </header>
-
-        <div class="dashboard">
-            <div class="stat-card">
-                <div>नकद राशि (Cash)</div>
-                <div id="cash" class="stat-value">₹10,00,000.00</div>
-            </div>
-            <div class="stat-card">
-                <div>🔒 बैंक FD (<span id="fdTimerDisplay">कोई FD नहीं</span>)</div>
-                <div id="fdDisplay" class="stat-value" style="color: var(--blue);">₹0.00</div>
-            </div>
-            <div class="stat-card">
-                <div>उधार + ब्याज (4%)</div>
-                <div id="loanDisplay" class="stat-value" style="color: var(--red);">₹0.00</div>
-            </div>
-            <div class="stat-card">
-                <div>कुल शुद्ध नेटवर्थ</div>
-                <div id="networth" class="stat-value">₹10,00,000.00</div>
-            </div>
-            <div class="stat-card">
-                <div>ट्रेडिंग क्वांटिटी</div>
-                <div style="margin-top: 2px;">
-                    <input type="number" id="globalQty" class="qty-input" value="10" min="1">
-                </div>
-            </div>
-        </div>
-
-        <!-- कंट्रोल पैनल -->
-        <div class="control-panel">
-            <div>
-                <select id="fdAmountSelect" class="select-input" style="width: 130px; margin-bottom: 2px;">
-                    <option value="50000">₹50,000</option>
-                    <option value="100000" selected>₹1,00,000</option>
-                    <option value="500000">₹5,00,000</option>
-                </select>
-                <button class="btn btn-fd-in" onclick="depositFD()">🏦 FD में डालें (30s)</button>
-            </div>
-
-            <button id="fdWithdrawBtn" class="btn btn-fd-out" onclick="withdrawFD()" style="align-self: flex-end;">🪓 FD क्लोज करें</button>
-            
-            <button id="loanBtn" class="btn btn-loan" onclick="getFriendLoan()" style="align-self: flex-end;">🤝 भाई से उधार (₹5 Lk)</button>
-            <button id="repayBtn" class="btn btn-repay" onclick="repayEMI()" style="display: none; align-self: flex-end;">💰 ₹50k किस्त चुकाएं</button>
-            
-            <button class="btn btn-gamble" onclick="harshadMehtaGamble()" style="align-self: flex-end;">😎 'रिस्क है तो इश्क है'</button>
-            
-            <button class="btn btn-reset" onclick="resetGame()" style="align-self: flex-end;">🗑️ गेम रीसेट</button>
-        </div>
-
-        <!-- स्टॉक मार्केट ग्रिड -->
-        <div class="market-grid" id="marketGrid"></div>
-
-        <div class="log-box" id="logBox">
-            [सिस्टम]: सुपर 10 स्टॉक रेडी। कंपनियों से हर 10 सेकंड में डिविडेंड मिलेगा। न्यूज़ पर कड़ी नज़र रखें!
-        </div>
+    <div class="dashboard">
+        <div class="stat-card"><div>नकद राशि</div><div id="cash" class="stat-value">₹22,00,000.00</div></div>
+        <div class="stat-card"><div>कुल नेटवर्थ</div><div id="networth" class="stat-value">₹22,00,000.00</div></div>
+        <div class="stat-card"><div>ट्रेडर रैंक</div><div class="stat-value" style="color:var(--green);">लक्ष्य 22 प्रो</div></div>
+        <div class="stat-card"><div>मार्जिन</div><div id="marginDisplay" class="stat-value">₹0.00</div></div>
+        <div class="stat-card"><div>सट्टा बोनस</div><div class="stat-value">22% Active</div></div>
     </div>
 
-    <!-- 👉 राइट साइड (यह हमेशा साइड में ही रहेगा, चाहे स्क्रीन जैसी भी हो) -->
-    <div class="scam-ticker" id="newsTicker">
-        📢 <b>मार्केट न्यूज़ चैनल</b><br><br>दलाल स्ट्रीट में आपका स्वागत है! हर 15 सेकंड में यहाँ 10 कंपनियों की लाइव न्यूज़ फ्लैश होगी।
-    </div>
-
+    <div class="market-grid" id="marketGrid"></div>
+    <div class="log-box" id="logBox">[सिस्टम]: लक्ष्य 22 v22.0 सफलतापूर्वक लोड हुआ। आपका सफर शुरू!</div>
 </div>
 
 <script>
-    let cash = 1000000;
-    let totalOwedWithInterest = 0; 
-    const LOAN_INTEREST_RATE = 0.04;  
-
-    let principalFD = 0;           
-    let totalFDWithInterest = 0;   
-    const FD_INTEREST_RATE = 0.06; 
-    let fdTimeRemaining = 0;        
-    let fdIntervalTracker = null;   
-
-    // 🏢 10 कंपनियाँ
+    let cash = 2200000;
     const stocks = [
-        { id: 'RELIANCE', name: 'Reliance Industries', price: 2450, change: 0, owned: 0, history: [2400, 2420, 2450], chart: null },
-        { id: 'TCS', name: 'Tata Consultancy Services', price: 3950, change: 0, owned: 0, history: [3900, 3930, 3950], chart: null },
-        { id: 'HDFCBANK', name: 'HDFC Bank Ltd', price: 1510, change: 0, owned: 0, history: [1530, 1500, 1510], chart: null },
-        { id: 'INFY', name: 'Infosys Ltd', price: 1420, change: 0, owned: 0, history: [1400, 1410, 1420], chart: null },
-        { id: 'TATAMOTORS', name: 'Tata Motors Ltd', price: 980, change: 0, owned: 0, history: [950, 970, 980], chart: null },
-        { id: 'ADANIENT', name: 'Adani Enterprises', price: 3120, change: 0, owned: 0, history: [3050, 3100, 3120], chart: null },
-        { id: 'SBIN', name: 'State Bank of India', price: 740, change: 0, owned: 0, history: [730, 735, 740], chart: null },
-        { id: 'ITC', name: 'ITC Limited', price: 430, change: 0, owned: 0, history: [425, 428, 430], chart: null },
-        { id: 'ZOMATO', name: 'Zomato Ltd', price: 190, change: 0, owned: 0, history: [180, 185, 190], chart: null },
-        { id: 'BHARTIARTL', name: 'Bharti Airtel Ltd', price: 1210, change: 0, owned: 0, history: [1190, 1200, 1210], chart: null }
-    ];
-
-    // न्यूज़ डेटाबेस
-    const newsEvents = [
-        { text: "Reliance को मिला बड़ा सोलर एनर्जी ऑर्डर! शेयर रॉकेट बना!", target: "RELIANCE", impact: 12 },
-        { text: "TCS के सीईओ का अचानक इस्तीफा! निवेशकों में हड़कंप!", target: "TCS", impact: -10 },
-        { text: "RBI ने नियमों में दी ढील, HDFC Bank के शेयर में भारी उछाल!", target: "HDFCBANK", impact: 8 },
-        { text: "IT सेक्टर में मंदी की आशंका, Infosys का शेयर लुढ़का!", target: "INFY", impact: -7 },
-        { text: "Tata Motors ने लॉन्च की नई सुपर चीप EV कार! बुकिंग्स फुल!", target: "TATAMOTORS", impact: 15 },
-        { text: "Adani को मिला नया इंटरनेशनल ग्रीनफील्ड प्रोजेक्ट! शेयर भागा!", target: "ADANIENT", impact: 14 },
-        { text: "SBI का मुनाफा रिकॉर्ड स्तर पर पहुंचा, तगड़े डिविडेंड का ऐलान!", target: "SBIN", impact: 9 },
-        { text: "बजट में सिगरेट पर बढ़ा टैक्स, ITC के शेयर में अचानक गिरावट!", target: "ITC", impact: -8 },
-        { text: "Zomato की डिलीवरी बॉयज ने हड़ताल खत्म की, शेयर रिकवर!", target: "ZOMATO", impact: 9 },
-        { text: "Airtel ने बढ़ाए अपने रिचार्ज प्लान्स के दाम! भारी मुनाफा संभव!", target: "BHARTIARTL", impact: 11 }
+        { id: 'TATA', name: 'Tata Motors', price: 922, owned: 0 },
+        { id: 'RELIANCE', name: 'Reliance', price: 2220, owned: 0 },
+        { id: 'HDFC', name: 'HDFC Bank', price: 1522, owned: 0 },
+        { id: 'ITC', name: 'ITC Ltd', price: 422, owned: 0 }
     ];
 
     function initMarket() {
         const grid = document.getElementById('marketGrid');
-        grid.innerHTML = '';
-
         stocks.forEach((stock, index) => {
-            const card = document.createElement('div');
-            card.className = 'stock-card';
-            card.innerHTML = `
-                <div class="stock-header">
-                    <div>
-                        <span class="stock-name">${stock.name}</span> 
-                        <strong style="color: var(--neon-blue);">(${stock.id})</strong>
-                    </div>
-                    <div id="price-${stock.id}" class="stock-price">₹${stock.price.toFixed(2)}</div>
-                </div>
-                <div id="change-${stock.id}" style="font-size:0.9rem;">0.00%</div>
-                <div class="chart-container">
-                    <canvas id="chart-${stock.id}"></canvas>
-                </div>
-                <div class="stock-actions">
-                    <span class="holding-badge">होल्डिंग: <span id="owned-${stock.id}" style="color:var(--gold)">0</span></span>
-                    <div>
-                        <button class="btn btn-buy" onclick="buyStock(${index})">🟢 BUY</button>
-                        <button class="btn btn-short" onclick="shortStock(${index})">🔴 SHORT</button>
-                    </div>
+            grid.innerHTML += `
+                <div class="stock-card">
+                    <h3>${stock.name} (${stock.id})</h3>
+                    <p>प्राइस: <span id="price-${stock.id}">₹${stock.price}</span></p>
+                    <button class="btn btn-buy" onclick="buy(${index})">BUY</button>
+                    <button class="btn btn-short" onclick="sell(${index})">SELL</button>
                 </div>
             `;
-            grid.appendChild(card);
-
-            const ctx = document.getElementById(`chart-${stock.id}`).getContext('2d');
-            stock.chart = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: ['', '', ''],
-                    datasets: [{
-                        data: stock.history,
-                        borderColor: '#10b981',
-                        borderWidth: 2,
-                        pointRadius: 0,
-                        fill: false,
-                        tension: 0.2
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { legend: { display: false } },
-                    scales: { x: { display: false }, y: { display: false } }
-                }
-            });
         });
     }
 
-    function saveGame() {
-        const gameData = {
-            cash: cash,
-            totalOwedWithInterest: totalOwedWithInterest,
-            principalFD: principalFD,
-            totalFDWithInterest: totalFDWithInterest,
-            fdTimeRemaining: fdTimeRemaining,
-            ownedStocks: stocks.map(s => ({ id: s.id, owned: s.owned }))
-        };
-        localStorage.setItem('tradingSimProData_v3.1', JSON.stringify(gameData));
-    }
-
-    function loadGame() {
-        const savedData = localStorage.getItem('tradingSimProData_v3.1');
-        if (savedData) {
-            const data = JSON.parse(savedData);
-            cash = data.cash;
-            totalOwedWithInterest = data.totalOwedWithInterest;
-            principalFD = data.principalFD;
-            totalFDWithInterest = data.totalFDWithInterest;
-            fdTimeRemaining = data.fdTimeRemaining;
-            
-            data.ownedStocks.forEach(savedStock => {
-                let stock = stocks.find(s => s.id === savedStock.id);
-                if (stock) stock.owned = savedStock.owned;
-            });
-
-            if (fdTimeRemaining > 0 && totalFDWithInterest > 0) {
-                startFDTimer();
-            }
-            setTimeout(() => addLog("💾 [SYSTEM]: आपका पुराना सेव डेटा लोड हो चुका है!"), 500);
+    function buy(index) {
+        if (cash >= stocks[index].price) {
+            cash -= stocks[index].price;
+            stocks[index].owned++;
+            update();
+            log(`खरीदा: ${stocks[index].name}`);
         }
     }
 
-    function resetGame() {
-        if(confirm("क्या आप सच में गेम रीसेट करना चाहते हैं? सब कुछ शुरू से शुरू होगा।")) {
-            localStorage.removeItem('tradingSimProData_v3.1');
-            location.reload();
+    function sell(index) {
+        if (stocks[index].owned > 0) {
+            cash += stocks[index].price;
+            stocks[index].owned--;
+            update();
+            log(`बेचा: ${stocks[index].name}`);
         }
     }
 
-    // मेन गेम लूप (1 सेकंड)
-    setInterval(() => {
-        stocks.forEach(stock => {
-            let percentChange = (Math.random() - 0.50) * 3; 
-            stock.price = Math.max(5, stock.price * (1 + percentChange / 100));
-            stock.change = percentChange;
-            
-            stock.history.push(stock.price);
-            if(stock.history.length > 15) stock.history.shift();
-            
-            stock.chart.data.labels = Array(stock.history.length).fill('');
-            stock.chart.data.datasets[0].data = stock.history;
-            stock.chart.data.datasets[0].borderColor = stock.change >= 0 ? '#10b981' : '#ef4444';
-            stock.chart.update('none');
-        });
-
-        if (totalOwedWithInterest > 0) {
-            totalOwedWithInterest += (totalOwedWithInterest * LOAN_INTEREST_RATE) / 10000;
-        }
-
-        if (totalFDWithInterest > 0) {
-            totalFDWithInterest += (totalFDWithInterest * FD_INTEREST_RATE) / 10000;
-        }
-
-        updateUI();
-        saveGame(); 
-    }, 1000);
-
-    // 🚨 न्यूज़ लूप (15 सेकंड)
-    setInterval(() => {
-        let randomNews = newsEvents[Math.floor(Math.random() * newsEvents.length)];
-        let stock = stocks.find(s => s.id === randomNews.target);
-        
-        if (stock) {
-            stock.price = Math.max(5, stock.price * (1 + randomNews.impact / 100));
-            const ticker = document.getElementById('newsTicker');
-            
-            ticker.style.borderColor = randomNews.impact > 0 ? "var(--green)" : "var(--red)";
-            ticker.innerHTML = `📢 <b>मार्केट न्यूज़ चैनल</b><br><br>🚨 ${randomNews.text}<br><br><span style="font-size:0.8rem; color:${randomNews.impact > 0 ? 'var(--green)' : 'var(--red)'}">अनुमानित असर: ${randomNews.impact}%</span>`;
-            
-            addLog(`📢 [NEWS]: ${randomNews.text}`);
-        }
-    }, 15000);
-
-    // डिविडेंड लूप
-    setInterval(() => {
-        let totalDividend = 0;
-        stocks.forEach(stock => {
-            if (stock.owned > 0) {
-                let divAmount = stock.owned * (stock.price * 0.005); 
-                totalDividend += divAmount;
-            }
-        });
-        if (totalDividend > 0) {
-            cash += totalDividend;
-            addLog(`💸 [DIVIDEND]: होल्डिंग्स से ₹${totalDividend.toFixed(2)} डिविडेंड मिला!`);
-        }
-    }, 10000);
-
-    function updateUI() {
-        let portfolioValue = 0;
-        stocks.forEach(stock => {
-            portfolioValue += stock.owned * stock.price;
-            const priceEl = document.getElementById(`price-${stock.id}`);
-            const changeEl = document.getElementById(`change-${stock.id}`);
-            const ownedEl = document.getElementById(`owned-${stock.id}`);
-            
-            if(priceEl) priceEl.innerText = `₹${stock.price.toFixed(2)}`;
-            if(ownedEl) ownedEl.innerText = stock.owned;
-            if(changeEl) {
-                changeEl.className = stock.change >= 0 ? 'price-up' : 'price-down';
-                changeEl.innerText = `${stock.change >= 0 ? '+' : ''}${stock.change.toFixed(2)}%`;
-            }
-        });
-
-        const netWorth = cash + portfolioValue + totalFDWithInterest - totalOwedWithInterest;
+    function update() {
         document.getElementById('cash').innerText = `₹${cash.toFixed(2)}`;
-        document.getElementById('fdDisplay').innerText = `₹${totalFDWithInterest.toFixed(2)}`;
-        document.getElementById('loanDisplay').innerText = `₹${totalOwedWithInterest.toFixed(2)}`;
-        document.getElementById('networth').innerText = `₹${netWorth.toFixed(2)}`;
-
-        const fdBtn = document.getElementById('fdWithdrawBtn');
-        const timerDisp = document.getElementById('fdTimerDisplay');
-        
-        if (totalFDWithInterest > 0) {
-            if (fdTimeRemaining > 0) {
-                timerDisp.innerText = `🔒 ${fdTimeRemaining}s बाकी`;
-                timerDisp.style.color = "var(--red)";
-                fdBtn.style.backgroundColor = "#b91c1c";
-                fdBtn.innerText = "🪓 समय से पहले तोड़ें (1%)";
-            } else {
-                timerDisp.innerText = `✅ मैच्योर`;
-                timerDisp.style.color = "var(--green)";
-                fdBtn.style.backgroundColor = "var(--green)";
-                fdBtn.innerText = "💰 FD पूरी निकालें (0%)";
-            }
-        } else {
-            timerDisp.innerText = "कोई FD नहीं";
-            timerDisp.style.color = "var(--text-color)";
-            fdBtn.style.backgroundColor = "#1e293b";
-            fdBtn.innerText = "🪓 FD क्लोज करें";
-        }
-
-        const repayBtn = document.getElementById('repayBtn');
-        repayBtn.style.display = totalOwedWithInterest > 0 ? "inline-block" : "none";
+        document.getElementById('networth').innerText = `₹${cash.toFixed(2)}`;
     }
 
-    function startFDTimer() {
-        if (fdIntervalTracker) clearInterval(fdIntervalTracker);
-        fdIntervalTracker = setInterval(() => {
-            if (fdTimeRemaining > 0) {
-                fdTimeRemaining--;
-                if (fdTimeRemaining === 0) {
-                    addLog("🎉 [FD MATURED]: समय सीमा समाप्त! अब बिना पेनाल्टी पैसा निकाल सकते हैं।");
-                    clearInterval(fdIntervalTracker);
-                }
-            }
-        }, 1000);
+    function log(msg) {
+        const box = document.getElementById('logBox');
+        box.innerHTML += `<br>[लक्ष्य 22]: ${msg}`;
+        box.scrollTop = box.scrollHeight;
     }
 
-    function depositFD() {
-        if (totalFDWithInterest > 0) return alert("पहले से एक FD चल रही है भाई!");
-        let selectedAmount = parseFloat(document.getElementById('fdAmountSelect').value);
-        if (cash >= selectedAmount) {
-            cash -= selectedAmount; principalFD = selectedAmount; totalFDWithInterest = selectedAmount; fdTimeRemaining = 30; 
-            addLog(`🏦 [FD DEPOSIT]: ₹${selectedAmount.toLocaleString('en-IN')} जमा!`);
-            startFDTimer(); updateUI();
-        } else { alert("कैश कम है भाई!"); }
-    }
+    setInterval(() => {
+        stocks.forEach(s => {
+            s.price += (Math.random() - 0.5) * 22;
+            document.getElementById(`price-${s.id}`).innerText = `₹${s.price.toFixed(2)}`;
+        });
+    }, 2000);
 
-    function withdrawFD() {
-        if (totalFDWithInterest <= 0) return alert("बैंक में कोई FD नहीं है!");
-        let interestEarned = totalFDWithInterest - principalFD;
-        let taxAmount = Math.max(0, interestEarned * 0.10); 
-        let penaltyAmount = 0;
-        if (fdTimeRemaining > 0) {
-            penaltyAmount = totalFDWithInterest * 0.01;
-            cash += (totalFDWithInterest - taxAmount - penaltyAmount);
-            addLog(`🪓 [PREMATURE]: तोड़ी। पेनाल्टी: ₹${penaltyAmount.toFixed(2)}, टैक्स: ₹${taxAmount.toFixed(2)}`);
-        } else {
-            cash += (totalFDWithInterest - taxAmount);
-            addLog(`💰 [MATURED]: पूरी हुई! टैक्स: ₹${taxAmount.toFixed(2)}`);
-        }
-        if (fdIntervalTracker) clearInterval(fdIntervalTracker);
-        principalFD = 0; totalFDWithInterest = 0; fdTimeRemaining = 0; updateUI();
-    }
-
-    function getFriendLoan() { cash += 500000; totalOwedWithInterest += 500000; addLog("🤝 [LOAN]: भाई से ₹5,00,000 उधार लिया।"); updateUI(); }
-    function repayEMI() {
-        if (totalOwedWithInterest <= 0) return;
-        let emiAmount = Math.min(50000, totalOwedWithInterest); 
-        if (cash >= emiAmount) {
-            cash -= emiAmount; totalOwedWithInterest -= emiAmount;
-            addLog(`💸 [EMI]: ₹${emiAmount.toFixed(2)} चुकाई। बाकी: ₹${totalOwedWithInterest.toFixed(2)}`);
-            updateUI();
-        } else { alert("किस्त के लिए ₹50,000 कैश चाहिए!"); }
-    }
-
-    function buyStock(index) {
-        let qty = parseInt(document.getElementById('globalQty').value);
-        if (isNaN(qty) || qty <= 0) return alert("सही क्वांटिटी डालो भाई!");
-        let stock = stocks[index];
-        let totalCost = stock.price * qty;
-        if (cash >= totalCost) { cash -= totalCost; stock.owned += qty; updateUI(); } 
-        else { addLog(`❌ [ERROR]: कैश कम है!`); }
-    }
-
-    function shortStock(index) {
-        let qty = parseInt(document.getElementById('globalQty').value);
-        if (isNaN(qty) || qty <= 0) return alert("सही क्वांटिटी डालो भाई!");
-        let stock = stocks[index];
-        cash += stock.price * qty; stock.owned -= qty; updateUI();
-    }
-
-    function harshadMehtaGamble() {
-        if(cash < 1000) return alert("सट्टा के लिए कम से कम ₹1,00,000 चाहिए!");
-        if (Math.random() <= 0.75) { cash += (cash * 0.4); addLog("😎 [GAMBLE]: रिस्क है तो इश्क है! मुनाफा!"); } 
-        else { cash = Math.max(100, cash * 0.70); addLog("🚨 [GAMBLE]: मार्केट क्रैश!"); }
-        updateUI();
-    }
-
-    function addLog(message) {
-        const logBox = document.getElementById('logBox');
-        logBox.innerHTML += `<br> ${message}`;
-        logBox.scrollTop = logBox.scrollHeight;
-    }
-
-    window.onload = () => { initMarket(); loadGame(); updateUI(); };
+    initMarket();
 </script>
 
 </body>
