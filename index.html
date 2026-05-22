@@ -2,137 +2,97 @@
 <html lang="hi">
 <head>
     <meta charset="UTF-8">
-    <title>लक्ष्य 22 | Lakshya 22 - ट्रेडिंग सिम्युलेटर v22.0</title>
+    <title>लक्ष्य 22 | Lakshya 22 - ट्रेडिंग सिम्युलेटर</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        :root { --bg-color: #020617; --card-bg: rgba(15, 23, 42, 0.75); --text-color: #f8fafc; --green: #10b981; --red: #ef4444; --gold: #fbbf24; --border: rgba(255, 255, 255, 0.08); }
-        body { font-family: 'Segoe UI', sans-serif; background-color: var(--bg-color); color: var(--text-color); margin: 0; padding: 20px; }
-        .header-title { text-align: center; color: var(--gold); font-size: 2.5rem; margin-bottom: 20px; font-weight: 900; }
-        .dashboard { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px; }
-        .stat-card { background: var(--card-bg); padding: 15px; border-radius: 12px; text-align: center; border: 1px solid var(--border); }
-        .stat-value { font-size: 1.2rem; font-weight: bold; color: var(--gold); }
-        .controls { display: flex; gap: 10px; justify-content: center; margin-bottom: 20px; }
-        .btn { padding: 12px 20px; border-radius: 8px; border: none; cursor: pointer; font-weight: bold; }
-        .market-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; }
-        .stock-card { background: var(--card-bg); border: 1px solid var(--border); padding: 15px; border-radius: 12px; text-align: center; }
-        .log-box { background: #000; padding: 15px; height: 120px; overflow-y: auto; margin-top: 20px; border: 1px solid var(--border); color: #38bdf8; font-family: monospace; }
+        :root { --bg: #020617; --card: #1e293b; --gold: #fbbf24; --green: #10b981; --red: #ef4444; --text: #f8fafc; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); padding: 20px; text-align: center; }
+        .header { color: var(--gold); font-size: 2.5rem; font-weight: 900; margin-bottom: 20px; }
+        .grid-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; max-width: 1000px; margin: 0 auto 20px auto; }
+        .card { background: var(--card); padding: 15px; border-radius: 10px; border: 1px solid #334155; }
+        .val { font-size: 1.2rem; font-weight: bold; color: var(--gold); }
+        .chart-container { background: #0f172a; padding: 20px; border-radius: 15px; max-width: 1000px; margin: 0 auto 20px auto; height: 300px; }
+        .market { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; max-width: 800px; margin: 0 auto; }
+        .stock { background: #1e293b; padding: 15px; border-radius: 10px; }
+        .btn { padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; margin: 5px; }
+        #logs { background: #000; padding: 10px; height: 80px; overflow-y: auto; margin-top: 20px; color: #38bdf8; font-family: monospace; }
     </style>
 </head>
 <body>
 
-<h1 class="header-title">📈 लक्ष्य 22 [LAKSHYA 22] 👑</h1>
+    <h1 class="header">📈 लक्ष्य 22 [LAKSHYA 22] 👑</h1>
 
-<div class="dashboard">
-    <div class="stat-card"><div>नकद (Cash)</div><div id="cash" class="stat-value">₹22,00,000</div></div>
-    <div class="stat-card"><div>लोन (Loan)</div><div id="loanDisplay" class="stat-value">₹0</div></div>
-    <div class="stat-card"><div>कुल टैक्स भरा</div><div id="taxDisplay" class="stat-value">₹0</div></div>
-    <div class="stat-card"><div>नेटवर्थ</div><div id="networth" class="stat-value">₹22,00,000</div></div>
-</div>
+    <div class="grid-stats">
+        <div class="card">नकद<div id="c" class="val">₹22,00,000</div></div>
+        <div class="card">लोन<div id="l" class="val">₹0</div></div>
+        <div class="card">टैक्स<div id="t" class="val">₹0</div></div>
+        <div class="card">नेटवर्थ<div id="n" class="val">₹22,00,000</div></div>
+    </div>
 
-<div class="controls">
-    <button class="btn" style="background:var(--gold)" onclick="takeLoan(500000)">₹5 लाख का लोन लें</button>
-</div>
+    <div class="chart-container">
+        <canvas id="priceChart"></canvas>
+    </div>
 
-<div class="market-grid" id="marketGrid"></div>
-<div class="log-box" id="logBox">[सिस्टम]: लक्ष्य 22 v22.0 चालू! टैक्स और लोन के साथ अपना लक्ष्य तय करें।</div>
+    <button class="btn" style="background:var(--gold)" onclick="takeLoan()">₹5 लाख का लोन लें</button>
 
-<script>
-    let cash = 2200000;
-    let remainingLoan = 0;
-    let emiAmount = 0;
-    let totalTax = 0;
+    <div class="market" id="market"></div>
+    <div id="logs">[सिस्टम]: लक्ष्य 22 एक्टिव! ट्रेडिंग शुरू करें।</div>
 
-    const stocks = [
-        { id: 'TATA', name: 'Tata Motors', price: 922, owned: 0, buyPrice: 0 },
-        { id: 'RELIANCE', name: 'Reliance Ind', price: 2220, owned: 0, buyPrice: 0 },
-        { id: 'HDFC', name: 'HDFC Bank', price: 1522, owned: 0, buyPrice: 0 },
-        { id: 'INFY', name: 'Infosys', price: 1422, owned: 0, buyPrice: 0 }
-    ];
-
-    function takeLoan(amount) {
-        if (remainingLoan > 0) return alert("पहले पुराना लोन चुकाओ भाई!");
-        remainingLoan = amount * 1.10; 
-        emiAmount = remainingLoan / 5;
-        cash += amount;
-        log(`🏦 ₹${amount} का लोन मंजूर! 10% ब्याज सहित 5 किस्तों में चुकाएं।`);
-        updateUI();
-    }
-
-    function trade(index, type) {
-        let s = stocks[index];
-        if (type === 'BUY') {
-            if (cash >= s.price) {
-                cash -= s.price;
-                s.owned++;
-                s.buyPrice = s.price;
-                log(`खरीदा: ${s.name} @ ₹${s.price}`);
-            }
-        } else if (type === 'SELL') {
-            if (s.owned > 0) {
-                let profit = s.price - s.buyPrice;
-                if (profit > 0) {
-                    let tax = profit * 0.05; // 5% टैक्स
-                    totalTax += tax;
-                    cash -= tax;
-                    log(`💸 टैक्स कटा: ₹${Math.floor(tax)}`);
-                }
-                cash += s.price;
-                s.owned--;
-                log(`बेचा: ${s.name} @ ₹${s.price}`);
-            }
-        }
-        updateUI();
-    }
-
-    setInterval(() => {
-        // EMI सिस्टम
-        if (remainingLoan > 0) {
-            if (cash >= emiAmount) {
-                cash -= emiAmount;
-                remainingLoan -= emiAmount;
-                log(`✅ EMI भुगतान: ₹${Math.floor(emiAmount)}`);
-            } else {
-                remainingLoan += (emiAmount * 0.1);
-                log(`🚨 पेनल्टी! EMI नहीं भर पाए।`);
-            }
-        }
+    <script>
+        let cash = 2200000, loan = 0, totalTax = 0;
+        const stock = { name: 'लक्ष्य इंडेक्स', price: 1000, buyPrice: 0, owned: 0 };
+        const priceHistory = [];
         
-        // मार्केट हलचल
-        stocks.forEach(s => {
-            s.price += (Math.random() - 0.5) * 22;
-            let el = document.getElementById(`p-${s.id}`);
-            if(el) el.innerText = `₹${Math.floor(s.price)}`;
+        const ctx = document.getElementById('priceChart').getContext('2d');
+        const chart = new Chart(ctx, {
+            type: 'line',
+            data: { labels: [], datasets: [{ label: 'इंडेक्स प्राइस', data: [], borderColor: '#fbbf24', fill: false }] },
+            options: { responsive: true, maintainAspectRatio: false }
         });
-        updateUI();
-    }, 5000);
 
-    function updateUI() {
-        document.getElementById('cash').innerText = `₹${Math.floor(cash)}`;
-        document.getElementById('loanDisplay').innerText = `₹${Math.floor(remainingLoan)}`;
-        document.getElementById('taxDisplay').innerText = `₹${Math.floor(totalTax)}`;
-        document.getElementById('networth').innerText = `₹${Math.floor(cash - remainingLoan)}`;
-    }
+        function takeLoan() {
+            if (loan > 0) return alert("पहले पुराना लोन चुकाएं!");
+            loan = 500000; cash += 500000; update();
+        }
 
-    function log(msg) {
-        const box = document.getElementById('logBox');
-        box.innerHTML += `<br>[लक्ष्य 22]: ${msg}`;
-        box.scrollTop = box.scrollHeight;
-    }
+        function trade(type) {
+            if (type === 'B' && cash >= stock.price) {
+                cash -= stock.price; stock.owned++; stock.buyPrice = stock.price;
+            } else if (type === 'S' && stock.owned > 0) {
+                let profit = stock.price - stock.buyPrice;
+                if (profit > 0) { let tax = profit * 0.05; totalTax += tax; cash -= tax; }
+                cash += stock.price; stock.owned--;
+            }
+            update();
+        }
 
-    function initMarket() {
-        const grid = document.getElementById('marketGrid');
-        stocks.forEach((s, i) => {
-            grid.innerHTML += `
-                <div class="stock-card">
-                    <h3>${s.name}</h3>
-                    <p>प्राइस: <span id="p-${s.id}">₹${Math.floor(s.price)}</span></p>
-                    <button class="btn" style="background:var(--green); color:white" onclick="trade(${i}, 'BUY')">BUY</button>
-                    <button class="btn" style="background:var(--red); color:white" onclick="trade(${i}, 'SELL')">SELL</button>
-                </div>
-            `;
-        });
-    }
+        function update() {
+            document.getElementById('c').innerText = `₹${Math.floor(cash)}`;
+            document.getElementById('l').innerText = `₹${loan}`;
+            document.getElementById('t').innerText = `₹${Math.floor(totalTax)}`;
+            document.getElementById('n').innerText = `₹${Math.floor(cash - loan)}`;
+        }
 
-    initMarket();
-</script>
+        setInterval(() => {
+            stock.price += (Math.random() - 0.5) * 50;
+            priceHistory.push(Math.floor(stock.price));
+            if(priceHistory.length > 20) priceHistory.shift();
+            
+            chart.data.labels = priceHistory.map((_, i) => i);
+            chart.data.datasets[0].data = priceHistory;
+            chart.update();
+
+            if (loan > 0) {
+                cash -= 50000; loan -= 50000;
+                document.getElementById('logs').innerHTML += "<br>✅ EMI कटी: ₹50,000";
+            }
+            update();
+        }, 5000);
+
+        document.getElementById('market').innerHTML = `<div class="stock"><h3>${stock.name}</h3><p class="val" id="p">₹1000</p><button class="btn" style="background:var(--green)" onclick="trade('B')">BUY</button><button class="btn" style="background:var(--red)" onclick="trade('S')">SELL</button></div>`;
+    </script>
 </body>
 </html>
+lakshya_22_v22.html
+lakshya_22_v22.html
+Loading lakshya_22_v22.html.Displaying lakshya_22_v22.html.
