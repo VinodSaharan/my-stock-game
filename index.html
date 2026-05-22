@@ -1,118 +1,23 @@
-<!DOCTYPE html>
-<html lang="hi">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>लक्ष्य 22 | Lakshya 22 - ट्रेडिंग सिम्युलेटर v22.0</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <style>
-        :root {
-            --bg-color: #020617;
-            --card-bg: rgba(15, 23, 42, 0.75);
-            --text-color: #f8fafc;
-            --green: #10b981;
-            --red: #ef4444;
-            --gold: #fbbf24;
-            --border: rgba(255, 255, 255, 0.08);
-            --lucky-color: #f43f5e;
-        }
-
-        body { font-family: 'Segoe UI', sans-serif; background-color: var(--bg-color); color: var(--text-color); margin: 0; padding: 20px; display: flex; justify-content: center; }
-        .main-wrapper { max-width: 1400px; width: 100%; }
-        .header-title { text-align: center; color: var(--gold); font-size: 2.5rem; margin-bottom: 20px; text-shadow: 0 0 20px rgba(251, 191, 36, 0.4); }
-        
-        .dashboard { display: grid; grid-template-columns: repeat(5, 1fr); gap: 15px; margin-bottom: 20px; }
-        .stat-card { background: var(--card-bg); padding: 15px; border-radius: 12px; text-align: center; border: 1px solid var(--border); }
-        .stat-value { font-size: 1.2rem; font-weight: bold; color: var(--gold); margin-top: 5px; }
-
-        .market-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
-        .stock-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 16px; padding: 15px; }
-        
-        .btn { padding: 10px 15px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; }
-        .btn-buy { background: var(--green); color: white; }
-        .btn-short { background: var(--red); color: white; }
-        
-        .log-box { background: #000; border: 1px solid var(--border); padding: 15px; height: 100px; overflow-y: auto; margin-top: 20px; font-family: monospace; color: #38bdf8; }
-    </style>
-</head>
-<body>
-
-<div class="main-wrapper">
-    <h1 class="header-title">📈 लक्ष्य 22 [LAKSHYA 22] 👑</h1>
-
-    <div class="dashboard">
-        <div class="stat-card"><div>नकद राशि</div><div id="cash" class="stat-value">₹22,00,000.00</div></div>
-        <div class="stat-card"><div>कुल नेटवर्थ</div><div id="networth" class="stat-value">₹22,00,000.00</div></div>
-        <div class="stat-card"><div>ट्रेडर रैंक</div><div class="stat-value" style="color:var(--green);">लक्ष्य 22 प्रो</div></div>
-        <div class="stat-card"><div>मार्जिन</div><div id="marginDisplay" class="stat-value">₹0.00</div></div>
-        <div class="stat-card"><div>सट्टा बोनस</div><div class="stat-value">22% Active</div></div>
-    </div>
-
-    <div class="market-grid" id="marketGrid"></div>
-    <div class="log-box" id="logBox">[सिस्टम]: लक्ष्य 22 v22.0 सफलतापूर्वक लोड हुआ। आपका सफर शुरू!</div>
-</div>
-
-<script>
-    let cash = 2200000;
-    const stocks = [
-        { id: 'TATA', name: 'Tata Motors', price: 922, owned: 0 },
-        { id: 'RELIANCE', name: 'Reliance', price: 2220, owned: 0 },
-        { id: 'HDFC', name: 'HDFC Bank', price: 1522, owned: 0 },
-        { id: 'ITC', name: 'ITC Ltd', price: 422, owned: 0 }
-    ];
-
-    function initMarket() {
-        const grid = document.getElementById('marketGrid');
-        stocks.forEach((stock, index) => {
-            grid.innerHTML += `
-                <div class="stock-card">
-                    <h3>${stock.name} (${stock.id})</h3>
-                    <p>प्राइस: <span id="price-${stock.id}">₹${stock.price}</span></p>
-                    <button class="btn btn-buy" onclick="buy(${index})">BUY</button>
-                    <button class="btn btn-short" onclick="sell(${index})">SELL</button>
-                </div>
-            `;
-        });
+// टैक्स कैलकुलेट करने का फंक्शन
+function calculateTax(sellPrice, buyPrice) {
+    let profit = sellPrice - buyPrice;
+    if (profit > 0) {
+        let tax = profit * 0.05; // 5% टैक्स
+        cash -= tax;
+        log(`💸 टैक्स कटा: ₹${tax.toFixed(0)} (सरकारी हिस्सा)`);
     }
+}
 
-    function buy(index) {
-        if (cash >= stocks[index].price) {
-            cash -= stocks[index].price;
-            stocks[index].owned++;
-            update();
-            log(`खरीदा: ${stocks[index].name}`);
-        }
-    }
-
-    function sell(index) {
-        if (stocks[index].owned > 0) {
-            cash += stocks[index].price;
-            stocks[index].owned--;
-            update();
-            log(`बेचा: ${stocks[index].name}`);
-        }
-    }
-
-    function update() {
-        document.getElementById('cash').innerText = `₹${cash.toFixed(2)}`;
-        document.getElementById('networth').innerText = `₹${cash.toFixed(2)}`;
-    }
-
-    function log(msg) {
-        const box = document.getElementById('logBox');
-        box.innerHTML += `<br>[लक्ष्य 22]: ${msg}`;
-        box.scrollTop = box.scrollHeight;
-    }
-
-    setInterval(() => {
-        stocks.forEach(s => {
-            s.price += (Math.random() - 0.5) * 22;
-            document.getElementById(`price-${s.id}`).innerText = `₹${s.price.toFixed(2)}`;
-        });
-    }, 2000);
-
-    initMarket();
-</script>
-
-</body>
-</html>
+// जब आप शेयर बेचें (Sell)
+function sellStock(index, buyPrice) {
+    let s = stocks[index];
+    let sellPrice = s.price;
+    
+    cash += sellPrice;
+    s.owned--;
+    
+    // टैक्स काटना
+    calculateTax(sellPrice, buyPrice);
+    
+    updateUI();
+}
