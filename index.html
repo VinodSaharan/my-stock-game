@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>मेरा शॉर्ट सेलिंग ट्रेडिंग ऐप 📉🚀</title>
+    <title>मैच्योरिटी टाइमर ट्रेडिंग सिम्युलेटर 📈🏦⏱️</title>
     <style>
         :root {
             --bg-color: #040811;
@@ -14,6 +14,8 @@
             --gold: #f59e0b;
             --neon-blue: #06b6d4;
             --purple: #a855f7;
+            --orange: #f97316;
+            --blue: #3b82f6;
         }
 
         body {
@@ -54,21 +56,21 @@
 
         .dashboard {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 15px;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 12px;
             margin-bottom: 20px;
         }
 
         .stat-card {
             background-color: var(--card-bg);
-            padding: 15px;
+            padding: 12px;
             border-radius: 8px;
             text-align: center;
             border: 1px solid #1e293b;
         }
 
         .stat-value {
-            font-size: 1.3rem;
+            font-size: 1.2rem;
             font-weight: bold;
             color: var(--gold);
         }
@@ -77,10 +79,10 @@
             background-color: #020617;
             color: #fff;
             border: 1px solid var(--neon-blue);
-            padding: 10px;
+            padding: 8px;
             border-radius: 8px;
             font-size: 1rem;
-            width: 120px;
+            width: 100px;
             text-align: center;
         }
 
@@ -94,13 +96,14 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            gap: 20px;
+            gap: 15px;
+            flex-wrap: wrap;
         }
 
         .btn {
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             font-weight: bold;
-            padding: 10px 18px;
+            padding: 10px 16px;
             border: none;
             border-radius: 8px;
             cursor: pointer;
@@ -111,6 +114,9 @@
         .btn-short { background-color: var(--red); color: white; }
         .btn-gamble { background: linear-gradient(45deg, #10b981, #059669); color: white; }
         .btn-loan { background-color: var(--purple); color: white; }
+        .btn-repay { background-color: var(--orange); color: white; display: none; }
+        .btn-fd-in { background-color: var(--blue); color: white; }
+        .btn-fd-out { background-color: #b91c1c; color: white; }
 
         .market-table {
             width: 100%;
@@ -153,11 +159,11 @@
 
 <div class="container">
     <header>
-        <h1 class="header-title">📉 बियर मार्केट और शॉर्ट सेलिंग सिम्युलेटर 🐻🚀</h1>
+        <h1 class="header-title">⏱️ FD समय सीमा और मैच्योरिटी सिम्युलेटर 🏦</h1>
     </header>
 
     <div class="scam-ticker" id="scamTicker">
-        📢 मार्केट अलर्ट: मंदी का माहौल है! जब शेयर गिरे, तब SHORT दबाकर मुनाफा कमाओ भाई!
+        ⏱️ नियम: FD की अवधि 30 सेकंड है। समय से पहले तोड़ोगे तो ही 1% जुर्माना लगेगा, वरना सिर्फ टैक्स!
     </div>
 
     <div class="dashboard">
@@ -166,24 +172,31 @@
             <div id="cash" class="stat-value">₹10,00,000.00</div>
         </div>
         <div class="stat-card">
-            <div>पोर्टफोलियो वैल्यू</div>
-            <div id="portfolio" class="stat-value">₹0.00</div>
+            <div>🔒 बैंक FD (<span id="fdTimerDisplay" style="color: var(--gold);">कोई FD नहीं</span>)</div>
+            <div id="fdDisplay" class="stat-value" style="color: var(--blue);">₹0.00</div>
         </div>
         <div class="stat-card">
-            <div>कुल नेटवर्थ</div>
+            <div>उधार + ब्याज (4%)</div>
+            <div id="loanDisplay" class="stat-value" style="color: var(--red);">₹0.00</div>
+        </div>
+        <div class="stat-card">
+            <div>कुल शुद्ध नेटवर्थ</div>
             <div id="networth" class="stat-value">₹10,00,000.00</div>
         </div>
         <div class="stat-card">
-            <div>ट्रेडिंग क्वांटिटी</div>
-            <div style="margin-top: 5px;">
+            <div>क्वांटिटी</div>
+            <div style="margin-top: 2px;">
                 <input type="number" id="globalQty" class="qty-input" value="10" min="1">
             </div>
         </div>
     </div>
 
     <div class="control-panel">
-        <button id="gambleBtn" class="btn btn-gamble" onclick="harshadMehtaGamble()">😎 'रिस्क है तो इश्क है' (80% Win)</button>
-        <button id="loanBtn" class="btn btn-loan" onclick="getFriendLoan()">🤝 भाई से उधार (₹5 Lakh)</button>
+        <button class="btn btn-fd-in" onclick="depositFD()">🏦 FD में डालें (₹1 Lk, 30s Lock)</button>
+        <button id="fdWithdrawBtn" class="btn btn-fd-out" onclick="withdrawFD()">🪓 FD क्लोज करें (चेक स्टेटस)</button>
+        <button id="loanBtn" class="btn btn-loan" onclick="getFriendLoan()">🤝 भाई से उधार (₹5 Lk @ 4%)</button>
+        <button id="repayBtn" class="btn btn-repay" onclick="repayFriendLoan()">💰 पूरा उधार चुकाएं</button>
+        <button id="gambleBtn" class="btn btn-gamble" onclick="harshadMehtaGamble()">😎 'रिस्क है तो इश्क है'</button>
     </div>
 
     <table class="market-table">
@@ -203,12 +216,24 @@
     </table>
 
     <div class="log-box" id="logBox">
-        [सिस्टम चालू]: शॉर्ट सेलिंग मोड ऑन है! अगर कोई शेयर गिर रहा है, तो SHORT दबाकर पहले बेच दो, फिर भाव गिरने पर BUY दबाकर प्रॉफिट बुक करो।
+        [सिस्टम]: टाइमर ट्रैकिंग एक्टिवेटेड। FD कराने पर 30 सेकंड का रिवर्स काउंटडाउन शुरू होगा।
     </div>
 </div>
 
 <script>
     let cash = 1000000;
+    
+    // 🤝 लोन वेरिएबल्स
+    let baseLoanAmount = 0;      
+    let totalOwedWithInterest = 0; 
+    const LOAN_INTEREST_RATE = 0.04;  
+
+    // 🏦 FD वेरिएबल्स
+    let principalFD = 0;           
+    let totalFDWithInterest = 0;   
+    const FD_INTEREST_RATE = 0.06; 
+    let fdTimeRemaining = 0;        // FD के बचे हुए सेकंड
+    let fdIntervalTracker = null;   // टाइमर चलाने के लिए
 
     const stocks = [
         { id: 'RELIANCE', name: 'Reliance Industries', price: 2450, change: 0, owned: 0 },
@@ -223,15 +248,28 @@
         { id: 'SUZLON', name: 'Suzlon Energy', price: 45, change: 0, owned: 0 }
     ];
 
-    // मार्केट फ्लक्चुएशन
     setInterval(() => {
+        // 1. मार्केट मूवमेंट
         stocks.forEach(stock => {
-            let percentChange = (Math.random() - 0.52) * 4; // थोडा डाउनवर्ड झुकाव ताकि शॉर्ट करने का मौका मिले
+            let percentChange = (Math.random() - 0.50) * 4; 
             stock.price = Math.max(5, stock.price * (1 + percentChange / 100));
             stock.change = percentChange;
         });
+
+        // 2. लोन ब्याज
+        if (baseLoanAmount > 0) {
+            let loanInterestPerSecond = (baseLoanAmount * LOAN_INTEREST_RATE) / 5000; 
+            totalOwedWithInterest += loanInterestPerSecond;
+        }
+
+        // 3. FD लाइव ब्याज
+        if (totalFDWithInterest > 0) {
+            let fdInterestPerSecond = (totalFDWithInterest * FD_INTEREST_RATE) / 5000;
+            totalFDWithInterest += fdInterestPerSecond;
+        }
+
         updateUI();
-    }, 1500);
+    }, 1000);
 
     function updateUI() {
         let portfolioValue = 0;
@@ -242,8 +280,6 @@
             portfolioValue += stock.owned * stock.price;
             const changeClass = stock.change >= 0 ? 'price-up' : 'price-down';
             const changeSign = stock.change >= 0 ? '+' : '';
-            
-            // माइनस होल्डिंग के लिए रेड कलर
             const holdingClass = stock.owned >= 0 ? 'holding-pos' : 'holding-neg';
 
             const row = document.createElement('tr');
@@ -254,55 +290,138 @@
                 <td class="${changeClass}">${changeSign}${stock.change.toFixed(2)}%</td>
                 <td><span class="${holdingClass}">${stock.owned}</span></td>
                 <td class="action-cell">
-                    <button class="btn btn-buy" onclick="buyOrCoverStock(${index})">🟢 BUY / COVER</button>
-                    <button class="btn btn-short" onclick="shortSellStock(${index})">🔴 SHORT SELL</button>
+                    <button class="btn btn-buy" onclick="buyOrCoverStock(${index})">🟢 BUY</button>
+                    <button class="btn btn-short" onclick="shortSellStock(${index})">🔴 SHORT</button>
                 </td>
             `;
             tbody.appendChild(row);
         });
 
-        const netWorth = cash + portfolioValue;
+        const netWorth = cash + portfolioValue + totalFDWithInterest - totalOwedWithInterest;
+        
         document.getElementById('cash').innerText = `₹${cash.toFixed(2)}`;
-        document.getElementById('portfolio').innerText = `₹${portfolioValue.toFixed(2)}`;
+        document.getElementById('fdDisplay').innerText = `₹${totalFDWithInterest.toFixed(2)}`;
+        document.getElementById('loanDisplay').innerText = `₹${totalOwedWithInterest.toFixed(2)}`;
         document.getElementById('networth').innerText = `₹${netWorth.toFixed(2)}`;
-    }
 
-    // 🟢 BUY या SHORT पोजीशन COVER करने का लॉजिक
-    function buyOrCoverStock(index) {
-        let qty = parseInt(document.getElementById('globalQty').value);
-        if (isNaN(qty) || qty <= 0) return alert("सही क्वांटिटी डालो भाई!");
-
-        let stock = stocks[index];
-        let totalCost = stock.price * qty;
-
-        if (cash >= totalCost) {
-            cash -= totalCost;
-            stock.owned += qty;
-            if (stock.owned < 0) {
-                addLog(`🔄 [COVER]: तूने ${qty} शेयर खरीदकर अपनी शॉर्ट पोजीशन कम की।`);
+        // बटन का रंग और टेक्स्ट टाइमर के हिसाब से बदलना
+        const fdBtn = document.getElementById('fdWithdrawBtn');
+        const timerDisp = document.getElementById('fdTimerDisplay');
+        
+        if (totalFDWithInterest > 0) {
+            if (fdTimeRemaining > 0) {
+                timerDisp.innerText = `🔒 ${fdTimeRemaining}s बाकी`;
+                timerDisp.style.color = "var(--red)";
+                fdBtn.style.backgroundColor = "#b91c1c";
+                fdBtn.innerText = "🪓 समय से पहले तोड़ें (1% Penalty)";
             } else {
-                addLog(`🟢 [BUY]: तूने ${qty} शेयर ${stock.id} के ₹${stock.price.toFixed(2)} पर खरीदे।`);
+                timerDisp.innerText = `✅ मैच्योर हो गई`;
+                timerDisp.style.color = "var(--green)";
+                fdBtn.style.backgroundColor = "var(--green)";
+                fdBtn.innerText = "💰 FD पूरी निकालें (0% Penalty)";
             }
-            updateUI();
         } else {
-            addLog(`❌ [ERROR]: खरीदने के लिए पैसे कम हैं भाई!`);
+            timerDisp.innerText = "कोई FD नहीं";
+            timerDisp.style.color = "var(--text-color)";
+            fdBtn.style.backgroundColor = "#1e293b";
+            fdBtn.innerText = "🪓 FD क्लोज करें";
+        }
+
+        const repayBtn = document.getElementById('repayBtn');
+        if (totalOwedWithInterest > 0) {
+            repayBtn.style.display = "inline-block";
+            repayBtn.innerText = `💰 लोन चुकाएं (₹${totalOwedWithInterest.toFixed(2)})`;
+        } else {
+            repayBtn.style.display = "none";
         }
     }
 
-    // 🔴 SHORT SELL करने का लॉजिक (बिना शेयर के भी बेचो!)
+    function depositFD() {
+        if (totalFDWithInterest > 0) {
+            alert("पहले से एक FD चल रही है भाई! उसे मैच्योर होने दो या तोड़ो।");
+            return;
+        }
+
+        if (cash >= 100000) {
+            cash -= 100000;
+            principalFD = 100000;
+            totalFDWithInterest = 100000;
+            fdTimeRemaining = 30; // 30 सेकंड का लॉक-इन टाइमर
+
+            addLog("🏦 [FD DEPOSIT]: ₹1,00,000 जमा। 30 सेकंड की समय सीमा शुरू!");
+            
+            // लाइव काउंटडाउन शुरू करना
+            if (fdIntervalTracker) clearInterval(fdIntervalTracker);
+            fdIntervalTracker = setInterval(() => {
+                if (fdTimeRemaining > 0) {
+                    fdTimeRemaining--;
+                    if (fdTimeRemaining === 0) {
+                        addLog("🎉 [FD MATURED]: आपकी FD की समय सीमा पूरी हो चुकी है! अब बिना किसी पेनाल्टी के पैसे निकाल सकते हैं।");
+                        document.getElementById('scamTicker').style.backgroundColor = "#065f46";
+                        document.getElementById('scamTicker').innerText = "🎉 बधाई हो भाई! FD मैच्योर हो गई। अब पैसे निकालने पर कोई जुर्माना नहीं लगेगा।";
+                        clearInterval(fdIntervalTracker);
+                    }
+                }
+            }, 1000);
+
+            updateUI();
+        } else {
+            alert("FD करने के लिए कैश में कम से कम ₹1,00,000 होने चाहिए!");
+        }
+    }
+
+    function withdrawFD() {
+        if (totalFDWithInterest <= 0) {
+            alert("बैंक में कोई FD नहीं है भाई!");
+            return;
+        }
+
+        let interestEarned = totalFDWithInterest - principalFD;
+        let taxAmount = Math.max(0, interestEarned * 0.10); // 10% TDS टैक्स (हमेशा लगेगा)
+        let penaltyAmount = 0;
+
+        // चैक करना कि समय सीमा पूरी हुई या नहीं
+        if (fdTimeRemaining > 0) {
+            // समय से पहले तोड़ा -> 1% पेनाल्टी
+            penaltyAmount = totalFDWithInterest * 0.01;
+            let finalPayout = totalFDWithInterest - taxAmount - penaltyAmount;
+            cash += finalPayout;
+
+            document.getElementById('scamTicker').style.backgroundColor = "#7f1d1d";
+            document.getElementById('scamTicker').innerText = `🚨 प्री-मैच्योर फटका! समय से पहले तोड़ने पर ₹${penaltyAmount.toFixed(2)} जुर्माना और ₹${taxAmount.toFixed(2)} टैक्स कट गया!`;
+            addLog(`🪓 [PREMATURE WITHDRAW]: समय से पहले FD तोड़ी। जुर्माना: ₹${penaltyAmount.toFixed(2)}, टैक्स: ₹${taxAmount.toFixed(2)}`);
+        } else {
+            // समय सीमा पूरी हो गई -> ₹0 पेनाल्टी
+            let finalPayout = totalFDWithInterest - taxAmount;
+            cash += finalPayout;
+
+            document.getElementById('scamTicker').style.backgroundColor = "#1e3a8a";
+            document.getElementById('scamTicker').innerText = `😇 स्मार्ट ट्रेडर! समय पूरा होने पर ₹0 जुर्माना लगा। सिर्फ ₹${taxAmount.toFixed(2)} टैक्स कटा।`;
+            addLog(`💰 [MATURED WITHDRAW]: सही समय पर FD निकाली। जुर्माना: ₹0.00, टैक्स: ₹${taxAmount.toFixed(2)} | खाते में आए: ₹${finalPayout.toFixed(2)}`);
+        }
+
+        // रिसेट करना
+        if (fdIntervalTracker) clearInterval(fdIntervalTracker);
+        principalFD = 0;
+        totalFDWithInterest = 0;
+        fdTimeRemaining = 0;
+        updateUI();
+    }
+
+    function buyOrCoverStock(index) {
+        let qty = parseInt(document.getElementById('globalQty').value);
+        if (isNaN(qty) || qty <= 0) return alert("सही क्वांटिटी डालो भाई!");
+        let stock = stocks[index];
+        let totalCost = stock.price * qty;
+        if (cash >= totalCost) { cash -= totalCost; stock.owned += qty; updateUI(); } 
+        else { addLog(`❌ [ERROR]: कैश कम है!`); }
+    }
+
     function shortSellStock(index) {
         let qty = parseInt(document.getElementById('globalQty').value);
         if (isNaN(qty) || qty <= 0) return alert("सही क्वांटिटी डालो भाई!");
-
         let stock = stocks[index];
-        let totalInflow = stock.price * qty;
-
-        // शॉर्ट करने पर कैश तुरंत मिलता है, पर पोजीशन माइनस हो जाती है
-        cash += totalInflow;
-        stock.owned -= qty;
-        
-        addLog(`🔴 [SHORT]: तूने ${qty} शेयर ${stock.id} के ₹${stock.price.toFixed(2)} के भाव पर शॉर्ट कर दिए!`);
-        updateUI();
+        cash += stock.price * qty; stock.owned -= qty; updateUI();
     }
 
     function addLog(message) {
@@ -311,32 +430,17 @@
         logBox.scrollTop = logBox.scrollHeight;
     }
 
-    function getFriendLoan() {
-        cash += 500000;
-        addLog("💜 [LOAN]: भाई से ₹5 लाख मिले। मंदी के बाजार को उड़ा दो!");
-        updateUI();
+    function getFriendLoan() { cash += 500000; baseLoanAmount += 500000; totalOwedWithInterest += 500000; updateUI(); }
+    function repayFriendLoan() {
+        if (totalOwedWithInterest <= 0) return;
+        if (cash >= totalOwedWithInterest) { cash -= totalOwedWithInterest; baseLoanAmount = 0; totalOwedWithInterest = 0; updateUI(); } 
+        else { alert("पैसे कम हैं भाई!"); }
     }
-
     function harshadMehtaGamble() {
         let gambleRoll = Math.random();
-        let portfolioValue = stocks.reduce((acc, s) => acc + (s.owned * s.price), 0);
-        let totalNet = cash + portfolioValue;
-
-        if (gambleRoll <= 0.80) { 
-            cash += totalNet; 
-            document.getElementById('scamTicker').style.backgroundColor = "#065f46";
-            document.getElementById('scamTicker').innerText = "🤑 छप्परफाड़ मुनाफा! 80% विन रेट ने पैसा सीधे डबल कर दिया!";
-            addLog("💰 [JACKPOT]: नेटवर्थ 2 गुना!");
-        } else {
-            cash = Math.max(100, cash * 0.80); 
-            stocks.forEach(s => s.owned = Math.floor(s.owned * 0.80)); 
-            document.getElementById('scamTicker').style.backgroundColor = "#7f1d1d";
-            document.getElementById('scamTicker').innerText = "🚨 मोये-मोये! मार्केट ने अचानक पलटी मारी, 20% का फटका लगा!";
-            addLog("🚨 [CRASH]: नुकसान हुआ, पर रिकवरी मुमकिन है!");
-        }
+        if (gambleRoll <= 0.80) { cash += (cash * 0.5); } else { cash = Math.max(100, cash * 0.80); }
         updateUI();
     }
-
     updateUI();
 </script>
 
