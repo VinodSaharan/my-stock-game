@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NSE दोस्त-यार स्पेशल सिम्युलेटर 🤝⚡</title>
+    <title>मेरा शॉर्ट सेलिंग ट्रेडिंग ऐप 📉🚀</title>
     <style>
         :root {
             --bg-color: #040811;
@@ -28,7 +28,7 @@
         }
 
         .container {
-            max-width: 1000px;
+            max-width: 1100px;
             width: 100%;
         }
 
@@ -41,9 +41,9 @@
         }
 
         .scam-ticker {
-            background-color: #065f46;
-            border: 2px solid var(--green);
-            color: #a7f3d0;
+            background-color: #1e293b;
+            border: 2px solid var(--neon-blue);
+            color: #e2e8f0;
             padding: 12px;
             border-radius: 8px;
             margin: 15px 0;
@@ -73,48 +73,44 @@
             color: var(--gold);
         }
 
+        .qty-input {
+            background-color: #020617;
+            color: #fff;
+            border: 1px solid var(--neon-blue);
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 1rem;
+            width: 120px;
+            text-align: center;
+        }
+
         .control-panel {
             background: linear-gradient(135deg, #0f172a, #1e1b4b);
-            padding: 20px;
+            padding: 15px;
             border-radius: 12px;
             text-align: center;
             margin-bottom: 20px;
-            border: 2px solid var(--neon-blue);
+            border: 2px solid var(--purple);
             display: flex;
-            justify-content: space-around;
+            justify-content: center;
             align-items: center;
-            flex-wrap: wrap;
-            gap: 15px;
+            gap: 20px;
         }
 
         .btn {
-            font-size: 1rem;
+            font-size: 0.95rem;
             font-weight: bold;
-            padding: 12px 25px;
+            padding: 10px 18px;
             border: none;
-            border-radius: 30px;
+            border-radius: 8px;
             cursor: pointer;
             transition: all 0.2s;
         }
 
-        .btn-algo { background-color: var(--neon-blue); color: #000; box-shadow: 0 0 10px rgba(6, 182, 212, 0.4); }
-        .btn-gamble { background: linear-gradient(45deg, #10b981, #059669); color: white; animation: pulse 1.2s infinite; }
-        .btn-loan { background-color: var(--purple); color: white; box-shadow: 0 0 10px rgba(168, 85, 247, 0.4); }
-        .btn-pause { background-color: #e2e8f0; color: #000; }
-
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.03); }
-            100% { transform: scale(1); }
-        }
-
-        .btn:disabled {
-            background-color: #4b5563 !important;
-            color: #9ca3af !important;
-            cursor: not-allowed;
-            box-shadow: none !important;
-            animation: none !important;
-        }
+        .btn-buy { background-color: var(--green); color: white; }
+        .btn-short { background-color: var(--red); color: white; }
+        .btn-gamble { background: linear-gradient(45deg, #10b981, #059669); color: white; }
+        .btn-loan { background-color: var(--purple); color: white; }
 
         .market-table {
             width: 100%;
@@ -124,15 +120,20 @@
             overflow: hidden;
         }
 
-        th, td { padding: 10px 15px; text-align: left; }
+        th, td { padding: 12px 15px; text-align: left; vertical-align: middle; }
         th { background-color: #1e293b; color: #94a3b8; }
         tr { border-bottom: 1px solid #1e293b; }
 
         .price-up { color: var(--green); font-weight: bold; }
         .price-down { color: var(--red); font-weight: bold; }
-        
-        .circuit-active { background-color: #450a0a !important; }
-        .circuit-badge { background-color: var(--red); color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.8rem; }
+
+        .action-cell {
+            display: flex;
+            gap: 10px;
+        }
+
+        .holding-pos { color: #fff; background: #1e293b; padding: 4px 10px; border-radius: 4px; font-weight: bold; }
+        .holding-neg { color: #fff; background: #7f1d1d; padding: 4px 10px; border-radius: 4px; font-weight: bold; }
 
         .log-box {
             background-color: #020617;
@@ -140,7 +141,7 @@
             border-radius: 8px;
             padding: 15px;
             margin-top: 20px;
-            height: 120px;
+            height: 140px;
             overflow-y: auto;
             font-family: monospace;
             font-size: 0.85rem;
@@ -152,11 +153,11 @@
 
 <div class="container">
     <header>
-        <h1 class="header-title">NSE दोस्त-यार स्पेशल सिम्युलेटर 🤝⚡</h1>
+        <h1 class="header-title">📉 बियर मार्केट और शॉर्ट सेलिंग सिम्युलेटर 🐻🚀</h1>
     </header>
 
     <div class="scam-ticker" id="scamTicker">
-        📢 ताज़ा खबर: तेरा भाई (AI) मार्केट संभाल रहा है, तू टेंशन मत ले!
+        📢 मार्केट अलर्ट: मंदी का माहौल है! जब शेयर गिरे, तब SHORT दबाकर मुनाफा कमाओ भाई!
     </div>
 
     <div class="dashboard">
@@ -173,16 +174,16 @@
             <div id="networth" class="stat-value">₹10,00,000.00</div>
         </div>
         <div class="stat-card">
-            <div>दोस्ती ब्याज़ (4% Live)</div>
-            <div id="interest" class="stat-value" style="color: var(--green);">₹0.00</div>
+            <div>ट्रेडिंग क्वांटिटी</div>
+            <div style="margin-top: 5px;">
+                <input type="number" id="globalQty" class="qty-input" value="10" min="1">
+            </div>
         </div>
     </div>
 
     <div class="control-panel">
-        <button id="algoBtn" class="btn btn-algo" onclick="startStrict5SecBlast()">⚡ 5-सेकंड ब्लास्ट!</button>
         <button id="gambleBtn" class="btn btn-gamble" onclick="harshadMehtaGamble()">😎 'रिस्क है तो इश्क है' (80% Win)</button>
-        <button id="pauseBtn" class="btn btn-pause" onclick="togglePause()">⏸️ चाय ब्रेक (Pause)</button>
-        <button id="loanBtn" class="btn btn-loan" onclick="getFriendLoan()">🤝 भाई से उधार (Loan)</button>
+        <button id="loanBtn" class="btn btn-loan" onclick="getFriendLoan()">🤝 भाई से उधार (₹5 Lakh)</button>
     </div>
 
     <table class="market-table">
@@ -191,86 +192,71 @@
                 <th>टिकर</th>
                 <th>कंपनी का नाम</th>
                 <th>लाइव प्राइस (₹)</th>
-                <th>कुल बदलाव</th>
-                <th>होल्डिंग (शेयर)</th>
-                <th>स्टेटस</th>
+                <th>बदलाव</th>
+                <th>पोजीशन (शेयर)</th>
+                <th>सौदा करें (Action)</th>
             </tr>
         </thead>
         <tbody id="market-body">
-            <!-- स्टॉक्स -->
+            <!-- स्टॉक्स डेटा -->
         </tbody>
     </table>
 
     <div class="log-box" id="logBox">
-        [सिस्टम]: ₹10 लाख का माल लोड है। पैसे कम पड़ें तो बेझिझक 'भाई से उधार' मांग लेना!
+        [सिस्टम चालू]: शॉर्ट सेलिंग मोड ऑन है! अगर कोई शेयर गिर रहा है, तो SHORT दबाकर पहले बेच दो, फिर भाव गिरने पर BUY दबाकर प्रॉफिट बुक करो।
     </div>
 </div>
 
 <script>
     let cash = 1000000;
-    let totalInterestEarned = 0;
-    let isPaused = false;
-    const BROKERAGE_RATE = 0.00005; 
-    const ANNUAL_INTEREST_RATE = 0.04; 
 
     const stocks = [
-        { id: 'RELIANCE', name: 'Reliance Industries', basePrice: 2450, price: 2450, change: 0, owned: 0, status: 'NORMAL' },
-        { id: 'TCS', name: 'Tata Consultancy Services', basePrice: 3950, price: 3950, change: 0, owned: 0, status: 'NORMAL' },
-        { id: 'HDFCBANK', name: 'HDFC Bank Ltd', basePrice: 1510, price: 1510, change: 0, owned: 0, status: 'NORMAL' },
-        { id: 'INFY', name: 'Infosys Ltd', basePrice: 1420, price: 1420, change: 0, owned: 0, status: 'NORMAL' },
-        { id: 'SBI', name: 'State Bank of India', basePrice: 760, price: 760, change: 0, owned: 0, status: 'NORMAL' },
-        { id: 'TATAMOTORS', name: 'Tata Motors Ltd', basePrice: 980, price: 980, change: 0, owned: 0, status: 'NORMAL' },
-        { id: 'ITC', name: 'ITC Cigarette & Aashirvaad', basePrice: 420, price: 420, change: 0, owned: 0, status: 'NORMAL' },
-        { id: 'ADANIENT', name: 'Adani Ultra Rockets', basePrice: 3150, price: 3150, change: 0, owned: 0, status: 'NORMAL' },
-        { id: 'ZOMATO', name: 'Zomato Free Delivery', basePrice: 190, price: 190, change: 0, owned: 0, status: 'NORMAL' },
-        { id: 'SUZLON', name: 'Suzlon Pavan Chakki', basePrice: 45, price: 45, change: 0, owned: 0, status: 'NORMAL' }
+        { id: 'RELIANCE', name: 'Reliance Industries', price: 2450, change: 0, owned: 0 },
+        { id: 'TCS', name: 'Tata Consultancy Services', price: 3950, change: 0, owned: 0 },
+        { id: 'HDFCBANK', name: 'HDFC Bank Ltd', price: 1510, change: 0, owned: 0 },
+        { id: 'INFY', name: 'Infosys Ltd', price: 1420, change: 0, owned: 0 },
+        { id: 'SBI', name: 'State Bank of India', price: 760, change: 0, owned: 0 },
+        { id: 'TATAMOTORS', name: 'Tata Motors Ltd', price: 980, change: 0, owned: 0 },
+        { id: 'ITC', name: 'ITC Cigarette & Food', price: 420, change: 0, owned: 0 },
+        { id: 'ADANIENT', name: 'Adani Enterprises', price: 3150, change: 0, owned: 0 },
+        { id: 'ZOMATO', name: 'Zomato Ltd', price: 190, change: 0, owned: 0 },
+        { id: 'SUZLON', name: 'Suzlon Energy', price: 45, change: 0, owned: 0 }
     ];
 
-    const funnyNews = [
-        "🔥 न्यूज़: बाबा रामदेव ने एआई पतंजलि लंगोट बनाई, मार्केट रॉकेट!",
-        "🚀 न्यूज़: जोमैटो वाला एलन मस्क को समोसा देने सीधे मंगल ग्रह पहुंचा!",
-        "💸 न्यूज़: बजट में सरकार ने पानी-पूरी पर टैक्स फ्री किया, ट्रेडर गदगद!",
-        "🚬 न्यूज़: आईटीसी के पैकेट में सोने का सिक्का मिला, बुल्स एक्टिव!"
-    ];
-
-    // ब्याज़ टाइमर (पॉज़ सपोर्ट के साथ)
+    // मार्केट फ्लक्चुएशन
     setInterval(() => {
-        if (!isPaused && cash > 0) {
-            let interestForInterval = (cash * ANNUAL_INTEREST_RATE) / (365 * 24 * 60 * 60 * 10);
-            cash += interestForInterval;
-            totalInterestEarned += interestForInterval;
-            updateUI();
-        }
-    }, 100);
+        stocks.forEach(stock => {
+            let percentChange = (Math.random() - 0.52) * 4; // थोडा डाउनवर्ड झुकाव ताकि शॉर्ट करने का मौका मिले
+            stock.price = Math.max(5, stock.price * (1 + percentChange / 100));
+            stock.change = percentChange;
+        });
+        updateUI();
+    }, 1500);
 
     function updateUI() {
         let portfolioValue = 0;
         const tbody = document.getElementById('market-body');
         tbody.innerHTML = '';
 
-        stocks.forEach(stock => {
+        stocks.forEach((stock, index) => {
             portfolioValue += stock.owned * stock.price;
             const changeClass = stock.change >= 0 ? 'price-up' : 'price-down';
             const changeSign = stock.change >= 0 ? '+' : '';
             
-            let statusHTML = `<span style="color:var(--green)">सक्रिय</span>`;
-            let rowClass = '';
-            
-            if(stock.status === 'CIRCUIT') {
-                statusHTML = `<span class="circuit-badge">🔒 20% सर्किट</span>`;
-                rowClass = 'circuit-active';
-            }
+            // माइनस होल्डिंग के लिए रेड कलर
+            const holdingClass = stock.owned >= 0 ? 'holding-pos' : 'holding-neg';
 
             const row = document.createElement('tr');
-            if(rowClass) row.className = rowClass;
-            
             row.innerHTML = `
                 <td><strong>${stock.id}</strong></td>
                 <td>${stock.name}</td>
                 <td>₹${stock.price.toFixed(2)}</td>
                 <td class="${changeClass}">${changeSign}${stock.change.toFixed(2)}%</td>
-                <td><mark style="background: #1e293b; color: #fff; padding: 2px 8px; border-radius: 4px;">${stock.owned}</mark></td>
-                <td>${statusHTML}</td>
+                <td><span class="${holdingClass}">${stock.owned}</span></td>
+                <td class="action-cell">
+                    <button class="btn btn-buy" onclick="buyOrCoverStock(${index})">🟢 BUY / COVER</button>
+                    <button class="btn btn-short" onclick="shortSellStock(${index})">🔴 SHORT SELL</button>
+                </td>
             `;
             tbody.appendChild(row);
         });
@@ -279,7 +265,44 @@
         document.getElementById('cash').innerText = `₹${cash.toFixed(2)}`;
         document.getElementById('portfolio').innerText = `₹${portfolioValue.toFixed(2)}`;
         document.getElementById('networth').innerText = `₹${netWorth.toFixed(2)}`;
-        document.getElementById('interest').innerText = `₹${totalInterestEarned.toFixed(4)}`;
+    }
+
+    // 🟢 BUY या SHORT पोजीशन COVER करने का लॉजिक
+    function buyOrCoverStock(index) {
+        let qty = parseInt(document.getElementById('globalQty').value);
+        if (isNaN(qty) || qty <= 0) return alert("सही क्वांटिटी डालो भाई!");
+
+        let stock = stocks[index];
+        let totalCost = stock.price * qty;
+
+        if (cash >= totalCost) {
+            cash -= totalCost;
+            stock.owned += qty;
+            if (stock.owned < 0) {
+                addLog(`🔄 [COVER]: तूने ${qty} शेयर खरीदकर अपनी शॉर्ट पोजीशन कम की।`);
+            } else {
+                addLog(`🟢 [BUY]: तूने ${qty} शेयर ${stock.id} के ₹${stock.price.toFixed(2)} पर खरीदे।`);
+            }
+            updateUI();
+        } else {
+            addLog(`❌ [ERROR]: खरीदने के लिए पैसे कम हैं भाई!`);
+        }
+    }
+
+    // 🔴 SHORT SELL करने का लॉजिक (बिना शेयर के भी बेचो!)
+    function shortSellStock(index) {
+        let qty = parseInt(document.getElementById('globalQty').value);
+        if (isNaN(qty) || qty <= 0) return alert("सही क्वांटिटी डालो भाई!");
+
+        let stock = stocks[index];
+        let totalInflow = stock.price * qty;
+
+        // शॉर्ट करने पर कैश तुरंत मिलता है, पर पोजीशन माइनस हो जाती है
+        cash += totalInflow;
+        stock.owned -= qty;
+        
+        addLog(`🔴 [SHORT]: तूने ${qty} शेयर ${stock.id} के ₹${stock.price.toFixed(2)} के भाव पर शॉर्ट कर दिए!`);
+        updateUI();
     }
 
     function addLog(message) {
@@ -288,34 +311,13 @@
         logBox.scrollTop = logBox.scrollHeight;
     }
 
-    // ⏸️ पॉज़/प्ले जुगाड़
-    function togglePause() {
-        isPaused = !isPaused;
-        const pauseBtn = document.getElementById('pauseBtn');
-        if (isPaused) {
-            pauseBtn.innerText = "▶️ ब्रेक ख़त्म (Resume)";
-            document.getElementById('scamTicker').innerText = "⏸️ मार्केट रूका हुआ है। तू आराम से सिगरेट-चाय पी के आ भाई!";
-            addLog("☕ [PAUSE]: चाय-सुट्टा ब्रेक एक्टिवेटेड।");
-        } else {
-            pauseBtn.innerText = "⏸️ चाय ब्रेक (Pause)";
-            document.getElementById('scamTicker').innerText = "🚀 गेम फिर से चालू! हो जाओ शुरू!";
-            addLog("▶️ [RESUME]: चलो भाई, मार्केट वापस चालू!");
-        }
-    }
-
-    // 🤝 भाई से उधार (लोन बटन)
     function getFriendLoan() {
-        if(isPaused) return;
         cash += 500000;
-        document.getElementById('scamTicker').style.backgroundColor = "#a855f7";
-        document.getElementById('scamTicker').innerText = "🤝 दोस्ती ज़िंदाबाद! तेरे भाई ने सीधे ₹5,00,000 तेरे वॉलेट में ट्रांसफर कर दिए!";
-        addLog("💜 [LOAN]: भाई का पैसा आ गया! ₹5,00,000 एडेड। कोई ब्याज़ नहीं लगेगा, ऐश कर!");
+        addLog("💜 [LOAN]: भाई से ₹5 लाख मिले। मंदी के बाजार को उड़ा दो!");
         updateUI();
     }
 
-    // 😎 80% चांस वाला गैंबल
     function harshadMehtaGamble() {
-        if(isPaused) return;
         let gambleRoll = Math.random();
         let portfolioValue = stocks.reduce((acc, s) => acc + (s.owned * s.price), 0);
         let totalNet = cash + portfolioValue;
@@ -323,80 +325,16 @@
         if (gambleRoll <= 0.80) { 
             cash += totalNet; 
             document.getElementById('scamTicker').style.backgroundColor = "#065f46";
-            document.getElementById('scamTicker').innerText = "🤑 पार्टी दे भाई!! पैसा सीधे डबल हो गया! अपुन की दोस्ती काम आई!";
-            addLog("💰 [JACKPOT]: पैसा ही पैसा बाबू भैया! सीधे 2x प्रॉफिट।");
+            document.getElementById('scamTicker').innerText = "🤑 छप्परफाड़ मुनाफा! 80% विन रेट ने पैसा सीधे डबल कर दिया!";
+            addLog("💰 [JACKPOT]: नेटवर्थ 2 गुना!");
         } else {
             cash = Math.max(100, cash * 0.80); 
             stocks.forEach(s => s.owned = Math.floor(s.owned * 0.80)); 
             document.getElementById('scamTicker').style.backgroundColor = "#7f1d1d";
-            document.getElementById('scamTicker').innerText = "📉 अरे यार! थोड़ा सा कट गया। मार्केट 20% नीचे आ गया।";
-            addLog("🚨 [CRASH]: छोटा सा झटका लगा है, पर तेरा भाई बैठा है लोन देने के लिए!");
+            document.getElementById('scamTicker').innerText = "🚨 मोये-मोये! मार्केट ने अचानक पलटी मारी, 20% का फटका लगा!";
+            addLog("🚨 [CRASH]: नुकसान हुआ, पर रिकवरी मुमकिन है!");
         }
         updateUI();
-    }
-
-    function startStrict5SecBlast() {
-        if(isPaused) return;
-        const btn = document.getElementById('algoBtn');
-        btn.disabled = true;
-        
-        document.getElementById('scamTicker').innerText = funnyNews[Math.floor(Math.random() * funnyNews.length)];
-
-        let intervalTime = 150; 
-        let totalDuration = 5000; 
-        let elapsed = 0;
-
-        let blastInterval = setInterval(() => {
-            if (isPaused) return; // अगर पॉज़ है तो आर्डर्स रोक दो
-
-            elapsed += intervalTime;
-
-            stocks.forEach(stock => {
-                if (stock.status === 'CIRCUIT') return;
-                let stepChange = (Math.random() - 0.4) * 22; 
-                let newPrice = stock.price * (1 + stepChange / 100);
-                let totalDiffPercent = ((newPrice - stock.basePrice) / stock.basePrice) * 100;
-
-                if (Math.abs(totalDiffPercent) >= 20) {
-                    stock.status = 'CIRCUIT';
-                    stock.price = stock.basePrice * (totalDiffPercent > 0 ? 1.20 : 0.80);
-                    stock.change = totalDiffPercent > 0 ? 20.00 : -20.00;
-                } else {
-                    stock.price = newPrice;
-                    stock.change = totalDiffPercent;
-                }
-            });
-
-            stocks.forEach(stock => {
-                if (stock.status === 'CIRCUIT') return;
-                let actionType = Math.random() > 0.4 ? 'BUY' : 'SELL';
-                let quantity = Math.floor(Math.random() * 501); 
-                let tradeValue = stock.price * quantity;
-                let brokerage = tradeValue * BROKERAGE_RATE;
-
-                if (actionType === 'BUY' && quantity > 0) {
-                    if (cash >= (tradeValue + brokerage)) {
-                        cash -= (tradeValue + brokerage);
-                        stock.owned += quantity;
-                        addLog(`🟢 [BUY] ${stock.id}: +${quantity} शेयर`);
-                    }
-                } else if (actionType === 'SELL' && quantity > 0) {
-                    if (cash + tradeValue > brokerage) {
-                        cash += tradeValue - brokerage;
-                        stock.owned -= quantity; 
-                        addLog(`🔴 [SHORT] ${stock.id}: -${quantity} शेयर`);
-                    }
-                }
-            });
-
-            updateUI();
-
-            if (elapsed >= totalDuration) {
-                clearInterval(blastInterval);
-                btn.disabled = false;
-                addLog("🏁 [ब्लास्ट ओवर]: 5 सेकंड का महा-ब्लास्ट पूरा हुआ!");
-            }
-        }, intervalTime);
     }
 
     updateUI();
