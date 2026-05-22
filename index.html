@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>अल्टीमेट ट्रेडिंग सिम्युलेटर प्रो v3.0 (10 स्टॉक्स) 📈🏦</title>
+    <title>अल्टीमेट ट्रेडिंग सिम्युलेटर प्रो v3.1 📈🏦</title>
     <!-- चार्ट्स के लिए Chart.js लाइब्रेरी -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
@@ -25,22 +25,30 @@
             background-color: var(--bg-color);
             color: var(--text-color);
             margin: 0;
-            /* 📢 न्यूज़ साइडबार के लिए राइट साइड में जगह छोड़ी */
-            padding: 20px 320px 20px 20px; 
+            padding: 20px;
             display: flex;
-            flex-direction: column;
-            align-items: center;
+            justify-content: center;
         }
 
-        .container { max-width: 1100px; width: 100%; }
-        .header-title { text-align: center; color: var(--gold); font-size: 2.3rem; margin: 0; text-shadow: 0 0 15px rgba(245, 158, 11, 0.4); }
+        /* 🧩 पूरे लेआउट को दो हिस्सों में बांटने के लिए मेन रैपर */
+        .main-wrapper {
+            display: flex;
+            max-width: 1300px;
+            width: 100%;
+            gap: 20px;
+        }
+
+        /* 👈 लेफ्ट साइड (गेम का मुख्य हिस्सा) */
+        .container { 
+            flex: 1; 
+            min-width: 0; /* फ्लेक्स बॉक्स को टूटने से बचाने के लिए */
+        }
+
+        .header-title { text-align: center; color: var(--gold); font-size: 2.3rem; margin: 0 0 15px 0; text-shadow: 0 0 15px rgba(245, 158, 11, 0.4); }
         
-        /* 📢 राइट-साइड न्यूज़ बॉक्स स्टाइल */
+        /* 👉 राइट साइड (न्यूज़ बॉक्स हमेशा साइड में रहेगा) */
         .scam-ticker {
-            position: fixed;
-            right: 20px;
-            top: 40px;
-            width: 260px;
+            width: 280px;
             background-color: #0f172a;
             border: 2px solid var(--neon-blue);
             color: #e2e8f0;
@@ -49,9 +57,11 @@
             font-weight: bold;
             font-size: 0.95rem;
             box-shadow: 0 4px 20px rgba(0,0,0,0.6);
-            z-index: 100;
             line-height: 1.5;
             transition: border-color 0.3s ease;
+            align-self: flex-start; /* अपनी जगह पर टिका रहेगा */
+            position: sticky;
+            top: 20px;
         }
 
         .dashboard {
@@ -59,7 +69,6 @@
             grid-template-columns: repeat(5, 1fr);
             gap: 12px;
             margin-bottom: 20px;
-            margin-top: 15px;
         }
 
         .stat-card {
@@ -117,7 +126,6 @@
         .btn-fd-out { background-color: #b91c1c; color: white; }
         .btn-reset { background-color: #475569; color: white; border: 1px solid #64748b; }
 
-        /* 🏢 10 कंपनियों के लिए सुंदर 2-कॉलम ग्रिड */
         .market-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -158,73 +166,84 @@
             font-size: 0.85rem;
             color: #a5f3fc;
         }
+
+        /* 📱 अगर कोई मोबाइल में खोले तो न्यूज़ अपने आप वापस ऊपर/नीचे सेट हो जाएगी */
+        @media (max-width: 800px) {
+            .main-wrapper { flex-direction: column; }
+            .scam-ticker { width: auto; position: static; order: -1; margin-bottom: 15px; }
+        }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <header>
-        <h1 class="header-title">📈 अल्टीमेट ट्रेडिंग सिम्युलेटर प्रो v3.0 🏦</h1>
-    </header>
+<!-- 🧩 नया फ्लेक्स बॉक्स कंटेनर -->
+<div class="main-wrapper">
 
-    <!-- 📢 राइट साइड वाला लाइव न्यूज़ बॉक्स -->
+    <!-- 👈 लेफ्ट साइड (पूरा गेमप्ले) -->
+    <div class="container">
+        <header>
+            <h1 class="header-title">📈 अल्टीमेट Trading सिम्युलेटर प्रो v3.1 🏦</h1>
+        </header>
+
+        <div class="dashboard">
+            <div class="stat-card">
+                <div>नकद राशि (Cash)</div>
+                <div id="cash" class="stat-value">₹10,00,000.00</div>
+            </div>
+            <div class="stat-card">
+                <div>🔒 बैंक FD (<span id="fdTimerDisplay">कोई FD नहीं</span>)</div>
+                <div id="fdDisplay" class="stat-value" style="color: var(--blue);">₹0.00</div>
+            </div>
+            <div class="stat-card">
+                <div>उधार + ब्याज (4%)</div>
+                <div id="loanDisplay" class="stat-value" style="color: var(--red);">₹0.00</div>
+            </div>
+            <div class="stat-card">
+                <div>कुल शुद्ध नेटवर्थ</div>
+                <div id="networth" class="stat-value">₹10,00,000.00</div>
+            </div>
+            <div class="stat-card">
+                <div>ट्रेडिंग क्वांटिटी</div>
+                <div style="margin-top: 2px;">
+                    <input type="number" id="globalQty" class="qty-input" value="10" min="1">
+                </div>
+            </div>
+        </div>
+
+        <!-- कंट्रोल पैनल -->
+        <div class="control-panel">
+            <div>
+                <select id="fdAmountSelect" class="select-input" style="width: 130px; margin-bottom: 2px;">
+                    <option value="50000">₹50,000</option>
+                    <option value="100000" selected>₹1,00,000</option>
+                    <option value="500000">₹5,00,000</option>
+                </select>
+                <button class="btn btn-fd-in" onclick="depositFD()">🏦 FD में डालें (30s)</button>
+            </div>
+
+            <button id="fdWithdrawBtn" class="btn btn-fd-out" onclick="withdrawFD()" style="align-self: flex-end;">🪓 FD क्लोज करें</button>
+            
+            <button id="loanBtn" class="btn btn-loan" onclick="getFriendLoan()" style="align-self: flex-end;">🤝 भाई से उधार (₹5 Lk)</button>
+            <button id="repayBtn" class="btn btn-repay" onclick="repayEMI()" style="display: none; align-self: flex-end;">💰 ₹50k किस्त चुकाएं</button>
+            
+            <button class="btn btn-gamble" onclick="harshadMehtaGamble()" style="align-self: flex-end;">😎 'रिस्क है तो इश्क है'</button>
+            
+            <button class="btn btn-reset" onclick="resetGame()" style="align-self: flex-end;">🗑️ गेम रीसेट</button>
+        </div>
+
+        <!-- स्टॉक मार्केट ग्रिड -->
+        <div class="market-grid" id="marketGrid"></div>
+
+        <div class="log-box" id="logBox">
+            [सिस्टम]: सुपर 10 स्टॉक रेडी। कंपनियों से हर 10 सेकंड में डिविडेंड मिलेगा। न्यूज़ पर कड़ी नज़र रखें!
+        </div>
+    </div>
+
+    <!-- 👉 राइट साइड (यह हमेशा साइड में ही रहेगा, चाहे स्क्रीन जैसी भी हो) -->
     <div class="scam-ticker" id="newsTicker">
         📢 <b>मार्केट न्यूज़ चैनल</b><br><br>दलाल स्ट्रीट में आपका स्वागत है! हर 15 सेकंड में यहाँ 10 कंपनियों की लाइव न्यूज़ फ्लैश होगी।
     </div>
 
-    <div class="dashboard">
-        <div class="stat-card">
-            <div>नकद राशि (Cash)</div>
-            <div id="cash" class="stat-value">₹10,00,000.00</div>
-        </div>
-        <div class="stat-card">
-            <div>🔒 बैंक FD (<span id="fdTimerDisplay">कोई FD नहीं</span>)</div>
-            <div id="fdDisplay" class="stat-value" style="color: var(--blue);">₹0.00</div>
-        </div>
-        <div class="stat-card">
-            <div>उधार + ब्याज (4%)</div>
-            <div id="loanDisplay" class="stat-value" style="color: var(--red);">₹0.00</div>
-        </div>
-        <div class="stat-card">
-            <div>कुल शुद्ध नेटवर्थ</div>
-            <div id="networth" class="stat-value">₹10,00,000.00</div>
-        </div>
-        <div class="stat-card">
-            <div>ट्रेडिंग क्वांटिटी</div>
-            <div style="margin-top: 2px;">
-                <!-- क्वांटिटी को वापस नॉर्मल कर दिया ताकि प्लेयर चेंज कर सके -->
-                <input type="number" id="globalQty" class="qty-input" value="10" min="1">
-            </div>
-        </div>
-    </div>
-
-    <!-- कंट्रोल पैनल -->
-    <div class="control-panel">
-        <div>
-            <select id="fdAmountSelect" class="select-input" style="width: 130px; margin-bottom: 2px;">
-                <option value="50000">₹50,000</option>
-                <option value="100000" selected>₹1,00,000</option>
-                <option value="500000">₹5,00,000</option>
-            </select>
-            <button class="btn btn-fd-in" onclick="depositFD()">🏦 FD में डालें (30s)</button>
-        </div>
-
-        <button id="fdWithdrawBtn" class="btn btn-fd-out" onclick="withdrawFD()" style="align-self: flex-end;">🪓 FD क्लोज करें</button>
-        
-        <button id="loanBtn" class="btn btn-loan" onclick="getFriendLoan()" style="align-self: flex-end;">🤝 भाई से उधार (₹5 Lk)</button>
-        <button id="repayBtn" class="btn btn-repay" onclick="repayEMI()" style="display: none; align-self: flex-end;">💰 ₹50k किस्त चुकाएं</button>
-        
-        <button class="btn btn-gamble" onclick="harshadMehtaGamble()" style="align-self: flex-end;">😎 'रिस्क है तो इश्क है'</button>
-        
-        <button class="btn btn-reset" onclick="resetGame()" style="align-self: flex-end;">🗑️ गेम रीसेट</button>
-    </div>
-
-    <!-- स्टॉक मार्केट ग्रिड (अब यहाँ 10 कंपनियां लोड होंगी) -->
-    <div class="market-grid" id="marketGrid"></div>
-
-    <div class="log-box" id="logBox">
-        [सिस्टम]: सुपर 10 स्टॉक रेडी। कंपनियों से हर 10 सेकंड में डिविडेंड (बोनस) मिलेगा। न्यूज़ पर कड़ी नज़र रखें!
-    </div>
 </div>
 
 <script>
@@ -238,7 +257,7 @@
     let fdTimeRemaining = 0;        
     let fdIntervalTracker = null;   
 
-    // 🏢 ये रही पूरी 10 धांसू कंपनियों की लिस्ट!
+    // 🏢 10 कंपनियाँ
     const stocks = [
         { id: 'RELIANCE', name: 'Reliance Industries', price: 2450, change: 0, owned: 0, history: [2400, 2420, 2450], chart: null },
         { id: 'TCS', name: 'Tata Consultancy Services', price: 3950, change: 0, owned: 0, history: [3900, 3930, 3950], chart: null },
@@ -252,7 +271,7 @@
         { id: 'BHARTIARTL', name: 'Bharti Airtel Ltd', price: 1210, change: 0, owned: 0, history: [1190, 1200, 1210], chart: null }
     ];
 
-    // 🚨 10 कंपनियों के लिए धमाकेदार न्यूज़ डेटाबेस
+    // न्यूज़ डेटाबेस
     const newsEvents = [
         { text: "Reliance को मिला बड़ा सोलर एनर्जी ऑर्डर! शेयर रॉकेट बना!", target: "RELIANCE", impact: 12 },
         { text: "TCS के सीईओ का अचानक इस्तीफा! निवेशकों में हड़कंप!", target: "TCS", impact: -10 },
@@ -328,11 +347,11 @@
             fdTimeRemaining: fdTimeRemaining,
             ownedStocks: stocks.map(s => ({ id: s.id, owned: s.owned }))
         };
-        localStorage.setItem('tradingSimProData_v3.0', JSON.stringify(gameData));
+        localStorage.setItem('tradingSimProData_v3.1', JSON.stringify(gameData));
     }
 
     function loadGame() {
-        const savedData = localStorage.getItem('tradingSimProData_v3.0');
+        const savedData = localStorage.getItem('tradingSimProData_v3.1');
         if (savedData) {
             const data = JSON.parse(savedData);
             cash = data.cash;
@@ -355,7 +374,7 @@
 
     function resetGame() {
         if(confirm("क्या आप सच में गेम रीसेट करना चाहते हैं? सब कुछ शुरू से शुरू होगा।")) {
-            localStorage.removeItem('tradingSimProData_v3.0');
+            localStorage.removeItem('tradingSimProData_v3.1');
             location.reload();
         }
     }
@@ -404,7 +423,7 @@
         }
     }, 15000);
 
-    // 💸 डिविडेंड लूप (10 सेकंड)
+    // डिविडेंड लूप
     setInterval(() => {
         let totalDividend = 0;
         stocks.forEach(stock => {
@@ -536,8 +555,8 @@
 
     function harshadMehtaGamble() {
         if(cash < 1000) return alert("सट्टा के लिए कम से कम ₹1,00,000 चाहिए!");
-        if (Math.random() <= 0.75) { cash += (cash * 0.4); addLog("😎 [GAMBLE]: रिस्क है तो इश्क है! तगड़ा मुनाफा!"); } 
-        else { cash = Math.max(100, cash * 0.70); addLog("🚨 [GAMBLE]: मार्केट क्रैश! बड़ा नुकसान!"); }
+        if (Math.random() <= 0.75) { cash += (cash * 0.4); addLog("😎 [GAMBLE]: रिस्क है तो इश्क है! मुनाफा!"); } 
+        else { cash = Math.max(100, cash * 0.70); addLog("🚨 [GAMBLE]: मार्केट क्रैश!"); }
         updateUI();
     }
 
