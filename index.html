@@ -1,0 +1,35 @@
+// 😎 80% चांस वाला गैंबल और धमाकेदार पोपट मैसेजेस
+function harshadMehtaGamble() {
+    if(isPaused) return;
+    let gambleRoll = Math.random();
+    let portfolioValue = stocks.reduce((acc, s) => acc + (s.owned * s.price), 0);
+    let totalNet = cash + portfolioValue;
+
+    // पोपट मैसेजेस की लिस्ट
+    const popatMessages = [
+        "📉 अरे यार! भारी पोपट हो गया! ऑपरेटर ने चूना लगा दिया, मार्केट 20% नीचे!",
+        "💸 खतम, बाय-बाय, टाटा, गुडबाय! ₹100 की पानी-पूरी खाने गए और यहाँ 20% साफ़!",
+        "🚨 मोये-मोये हो गया भाई! शेयर के भाव ऐसे गिरे जैसे संडे को नींद!",
+        "📉 भाई का तगड़ा कट गया! (टेंशन मत ले, 'भाई से उधार' बटन दबा!)"
+    ];
+
+    if (gambleRoll <= 0.80) { 
+        // 80% चांस: जीत गए!
+        cash += totalNet; 
+        document.getElementById('scamTicker').style.backgroundColor = "#065f46";
+        document.getElementById('scamTicker').innerText = "🤑 पार्टी दे भाई!! पैसा सीधे डबल हो गया! अपुन की दोस्ती काम आई!";
+        addLog("💰 [JACKPOT]: पैसा ही पैसा बाबू भैया! सीधे 2x प्रॉफिट।");
+    } else {
+        // 20% चांस: पोपट हो गया!
+        cash = Math.max(100, cash * 0.80); 
+        stocks.forEach(s => s.owned = Math.floor(s.owned * 0.80)); 
+        
+        // रैंडम पोपट मैसेज उठाओ
+        let randomPopat = popatMessages[Math.floor(Math.random() * popatMessages.length)];
+        
+        document.getElementById('scamTicker').style.backgroundColor = "#7f1d1d";
+        document.getElementById('scamTicker').innerText = randomPopat;
+        addLog("🚨 [POPAT MOMENT]: छोटा सा झटका लगा है, पर तेरा भाई बैठा है लोन देने के लिए!");
+    }
+    updateUI();
+}
