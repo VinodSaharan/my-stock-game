@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>अल्टीमेट ट्रेडिंग सिम्युलेटर प्रो 📈🏦</title>
+    <title>अल्टीमेट ट्रेडिंग सिम्युलेटर प्रो v3.0 (10 स्टॉक्स) 📈🏦</title>
     <!-- चार्ट्स के लिए Chart.js लाइब्रेरी -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
@@ -25,26 +25,33 @@
             background-color: var(--bg-color);
             color: var(--text-color);
             margin: 0;
-            padding: 20px;
+            /* 📢 न्यूज़ साइडबार के लिए राइट साइड में जगह छोड़ी */
+            padding: 20px 320px 20px 20px; 
             display: flex;
             flex-direction: column;
             align-items: center;
         }
 
-        .container { max-width: 1200px; width: 100%; }
+        .container { max-width: 1100px; width: 100%; }
         .header-title { text-align: center; color: var(--gold); font-size: 2.3rem; margin: 0; text-shadow: 0 0 15px rgba(245, 158, 11, 0.4); }
         
+        /* 📢 राइट-साइड न्यूज़ बॉक्स स्टाइल */
         .scam-ticker {
-            background-color: #1e293b;
+            position: fixed;
+            right: 20px;
+            top: 40px;
+            width: 260px;
+            background-color: #0f172a;
             border: 2px solid var(--neon-blue);
             color: #e2e8f0;
-            padding: 12px;
-            border-radius: 8px;
-            margin: 15px 0;
+            padding: 18px;
+            border-radius: 12px;
             font-weight: bold;
-            text-align: center;
-            font-size: 1.1rem;
-            min-height: 24px;
+            font-size: 0.95rem;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.6);
+            z-index: 100;
+            line-height: 1.5;
+            transition: border-color 0.3s ease;
         }
 
         .dashboard {
@@ -52,6 +59,7 @@
             grid-template-columns: repeat(5, 1fr);
             gap: 12px;
             margin-bottom: 20px;
+            margin-top: 15px;
         }
 
         .stat-card {
@@ -62,7 +70,7 @@
             border: 1px solid #1e293b;
         }
 
-        .stat-value { font-size: 1.2rem; font-weight: bold; color: var(--gold); }
+        .stat-value { font-size: 1.1rem; font-weight: bold; color: var(--gold); }
         
         .qty-input, .select-input {
             background-color: #020617;
@@ -109,6 +117,7 @@
         .btn-fd-out { background-color: #b91c1c; color: white; }
         .btn-reset { background-color: #475569; color: white; border: 1px solid #64748b; }
 
+        /* 🏢 10 कंपनियों के लिए सुंदर 2-कॉलम ग्रिड */
         .market-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -132,7 +141,7 @@
         .price-up { color: var(--green); }
         .price-down { color: var(--red); }
 
-        .chart-container { position: relative; height: 120px; width: 100%; }
+        .chart-container { position: relative; height: 110px; width: 100%; }
 
         .stock-actions { display: flex; justify-content: space-between; align-items: center; margin-top: 5px; }
         .holding-badge { background: #1e293b; padding: 4px 10px; border-radius: 6px; font-size: 0.85rem; }
@@ -155,12 +164,12 @@
 
 <div class="container">
     <header>
-        <h1 class="header-title">📈 अल्टीमेट ट्रेडिंग सिम्युलेटर प्रो v2.1 🏦</h1>
+        <h1 class="header-title">📈 अल्टीमेट ट्रेडिंग सिम्युलेटर प्रो v3.0 🏦</h1>
     </header>
 
-    <!-- ब्रेकिंग न्यूज़ न्यूज़ बॉक्स -->
+    <!-- 📢 राइट साइड वाला लाइव न्यूज़ बॉक्स -->
     <div class="scam-ticker" id="newsTicker">
-        📢 वेलकम भाई! गेम अब ऑटो-सेव होता रहेगा। पेज रीफ्रेश करने पर भी डेटा डिलीट नहीं होगा!
+        📢 <b>मार्केट न्यूज़ चैनल</b><br><br>दलाल स्ट्रीट में आपका स्वागत है! हर 15 सेकंड में यहाँ 10 कंपनियों की लाइव न्यूज़ फ्लैश होगी।
     </div>
 
     <div class="dashboard">
@@ -183,12 +192,13 @@
         <div class="stat-card">
             <div>ट्रेडिंग क्वांटिटी</div>
             <div style="margin-top: 2px;">
+                <!-- क्वांटिटी को वापस नॉर्मल कर दिया ताकि प्लेयर चेंज कर सके -->
                 <input type="number" id="globalQty" class="qty-input" value="10" min="1">
             </div>
         </div>
     </div>
 
-    <!-- एडवांस्ड कंट्रोल पैनल -->
+    <!-- कंट्रोल पैनल -->
     <div class="control-panel">
         <div>
             <select id="fdAmountSelect" class="select-input" style="width: 130px; margin-bottom: 2px;">
@@ -206,53 +216,56 @@
         
         <button class="btn btn-gamble" onclick="harshadMehtaGamble()" style="align-self: flex-end;">😎 'रिस्क है तो इश्क है'</button>
         
-        <!-- 🗑️ नया रीसेट बटन -->
-        <button class="btn btn-reset" onclick="resetGame()" style="align-self: flex-end;">🗑️ गेम रीसेट करें</button>
+        <button class="btn btn-reset" onclick="resetGame()" style="align-self: flex-end;">🗑️ गेम रीसेट</button>
     </div>
 
-    <!-- स्टॉक收藏 मार्केट ग्रिड -->
+    <!-- स्टॉक मार्केट ग्रिड (अब यहाँ 10 कंपनियां लोड होंगी) -->
     <div class="market-grid" id="marketGrid"></div>
 
     <div class="log-box" id="logBox">
-        [सिस्टम]: प्रो सिम्युलेटर रेडी। कंपनियों से हर 10 सेकंड में डिविडेंड (बोनस) मिलेगा। न्यूज़ पर नज़र रखें!
+        [सिस्टम]: सुपर 10 स्टॉक रेडी। कंपनियों से हर 10 सेकंड में डिविडेंड (बोनस) मिलेगा। न्यूज़ पर कड़ी नज़र रखें!
     </div>
 </div>
 
 <script>
     let cash = 1000000;
-    
-    // 🤝 लोन वेरिएबल्स (EMI सिस्टम)
     let totalOwedWithInterest = 0; 
     const LOAN_INTEREST_RATE = 0.04;  
 
-    // 🏦 FD वेरिएबल्स (डायनेमिक अमाउंट)
     let principalFD = 0;           
     let totalFDWithInterest = 0;   
     const FD_INTEREST_RATE = 0.06; 
     let fdTimeRemaining = 0;        
     let fdIntervalTracker = null;   
 
-    // स्टॉक्स डेटा
+    // 🏢 ये रही पूरी 10 धांसू कंपनियों की लिस्ट!
     const stocks = [
         { id: 'RELIANCE', name: 'Reliance Industries', price: 2450, change: 0, owned: 0, history: [2400, 2420, 2450], chart: null },
         { id: 'TCS', name: 'Tata Consultancy Services', price: 3950, change: 0, owned: 0, history: [3900, 3930, 3950], chart: null },
         { id: 'HDFCBANK', name: 'HDFC Bank Ltd', price: 1510, change: 0, owned: 0, history: [1530, 1500, 1510], chart: null },
         { id: 'INFY', name: 'Infosys Ltd', price: 1420, change: 0, owned: 0, history: [1400, 1410, 1420], chart: null },
         { id: 'TATAMOTORS', name: 'Tata Motors Ltd', price: 980, change: 0, owned: 0, history: [950, 970, 980], chart: null },
-        { id: 'ZOMATO', name: 'Zomato Ltd', price: 190, change: 0, owned: 0, history: [180, 185, 190], chart: null }
+        { id: 'ADANIENT', name: 'Adani Enterprises', price: 3120, change: 0, owned: 0, history: [3050, 3100, 3120], chart: null },
+        { id: 'SBIN', name: 'State Bank of India', price: 740, change: 0, owned: 0, history: [730, 735, 740], chart: null },
+        { id: 'ITC', name: 'ITC Limited', price: 430, change: 0, owned: 0, history: [425, 428, 430], chart: null },
+        { id: 'ZOMATO', name: 'Zomato Ltd', price: 190, change: 0, owned: 0, history: [180, 185, 190], chart: null },
+        { id: 'BHARTIARTL', name: 'Bharti Airtel Ltd', price: 1210, change: 0, owned: 0, history: [1190, 1200, 1210], chart: null }
     ];
 
-    // ब्रेकिंग न्यूज़ डेटाबेस
+    // 🚨 10 कंपनियों के लिए धमाकेदार न्यूज़ डेटाबेस
     const newsEvents = [
-        { text: "🚀 Reliance को मिला बड़ा सोलर एनर्जी ऑर्डर! शेयर रॉकेट बना!", target: "RELIANCE", impact: 12 },
-        { text: "🚨 TCS के सीईओ का अचानक इस्तीफा! निवेशकों में हड़कंप!", target: "TCS", impact: -10 },
-        { text: "📈 RBI ने नियमों में दी ढील, HDFC Bank के शेयर में भारी उछाल!", target: "HDFCBANK", impact: 8 },
-        { text: "📉 IT सेक्टर में मंदी की आशंका, Infosys का शेयर लुढ़का!", target: "INFY", impact: -7 },
-        { text: "🚗 Tata Motors ने लॉन्च की नई सुपर चीप EV कार! बुकिंग्स फुल!", target: "TATAMOTORS", impact: 15 },
-        { text: "🍔 Zomato की डिलीवरी बॉयज ने हड़ताल खत्म की, शेयर रिकवर!", target: "ZOMATO", impact: 9 }
+        { text: "Reliance को मिला बड़ा सोलर एनर्जी ऑर्डर! शेयर रॉकेट बना!", target: "RELIANCE", impact: 12 },
+        { text: "TCS के सीईओ का अचानक इस्तीफा! निवेशकों में हड़कंप!", target: "TCS", impact: -10 },
+        { text: "RBI ने नियमों में दी ढील, HDFC Bank के शेयर में भारी उछाल!", target: "HDFCBANK", impact: 8 },
+        { text: "IT सेक्टर में मंदी की आशंका, Infosys का शेयर लुढ़का!", target: "INFY", impact: -7 },
+        { text: "Tata Motors ने लॉन्च की नई सुपर चीप EV कार! बुकिंग्स फुल!", target: "TATAMOTORS", impact: 15 },
+        { text: "Adani को मिला नया इंटरनेशनल ग्रीनफील्ड प्रोजेक्ट! शेयर भागा!", target: "ADANIENT", impact: 14 },
+        { text: "SBI का मुनाफा रिकॉर्ड स्तर पर पहुंचा, तगड़े डिविडेंड का ऐलान!", target: "SBIN", impact: 9 },
+        { text: "बजट में सिगरेट पर बढ़ा टैक्स, ITC के शेयर में अचानक गिरावट!", target: "ITC", impact: -8 },
+        { text: "Zomato की डिलीवरी बॉयज ने हड़ताल खत्म की, शेयर रिकवर!", target: "ZOMATO", impact: 9 },
+        { text: "Airtel ने बढ़ाए अपने रिचार्ज प्लान्स के दाम! भारी मुनाफा संभव!", target: "BHARTIARTL", impact: 11 }
     ];
 
-    // ग्रिड और चार्ट्स इनिशियलाइजेशन
     function initMarket() {
         const grid = document.getElementById('marketGrid');
         grid.innerHTML = '';
@@ -306,7 +319,6 @@
         });
     }
 
-    // 💾 गेम सेव करने का फंक्शन
     function saveGame() {
         const gameData = {
             cash: cash,
@@ -316,12 +328,11 @@
             fdTimeRemaining: fdTimeRemaining,
             ownedStocks: stocks.map(s => ({ id: s.id, owned: s.owned }))
         };
-        localStorage.setItem('tradingSimProData_v2', JSON.stringify(gameData));
+        localStorage.setItem('tradingSimProData_v3.0', JSON.stringify(gameData));
     }
 
-    // 📥 गेम लोड करने का फंक्शन
     function loadGame() {
-        const savedData = localStorage.getItem('tradingSimProData_v2');
+        const savedData = localStorage.getItem('tradingSimProData_v3.0');
         if (savedData) {
             const data = JSON.parse(savedData);
             cash = data.cash;
@@ -335,24 +346,21 @@
                 if (stock) stock.owned = savedStock.owned;
             });
 
-            // अगर अधूरी FD बची थी, तो टाइमर दोबारा चालू करें
             if (fdTimeRemaining > 0 && totalFDWithInterest > 0) {
                 startFDTimer();
             }
-            
-            setTimeout(() => addLog("💾 [SYSTEM]: आपका पुराना सेव गेम डेटा सफलतापूर्वक लोड कर दिया गया है!"), 500);
+            setTimeout(() => addLog("💾 [SYSTEM]: आपका पुराना सेव डेटा लोड हो चुका है!"), 500);
         }
     }
 
-    // 🗑️ गेम रीसेट करने का फंक्शन
     function resetGame() {
-        if(confirm("क्या आप सच में गेम रीसेट करना चाहते हैं? आपकी सारी कमाई जीरो हो जाएगी!")) {
-            localStorage.removeItem('tradingSimProData_v2');
-            location.reload(); // पेज रिफ्रेश करके शुरुआत पर लाएं
+        if(confirm("क्या आप सच में गेम रीसेट करना चाहते हैं? सब कुछ शुरू से शुरू होगा।")) {
+            localStorage.removeItem('tradingSimProData_v3.0');
+            location.reload();
         }
     }
 
-    // मेन गेम लूप (हर 1 सेकंड)
+    // मेन गेम लूप (1 सेकंड)
     setInterval(() => {
         stocks.forEach(stock => {
             let percentChange = (Math.random() - 0.50) * 3; 
@@ -377,23 +385,26 @@
         }
 
         updateUI();
-        saveGame(); // ✨ हर सेकंड बैकग्राउंड में ऑटो-सेव होता रहेगा!
+        saveGame(); 
     }, 1000);
 
-    // 🚨 न्यूज़ इवेंट लूप (हर 15 सेकंड)
+    // 🚨 न्यूज़ लूप (15 सेकंड)
     setInterval(() => {
         let randomNews = newsEvents[Math.floor(Math.random() * newsEvents.length)];
         let stock = stocks.find(s => s.id === randomNews.target);
         
         if (stock) {
             stock.price = Math.max(5, stock.price * (1 + randomNews.impact / 100));
-            document.getElementById('newsTicker').style.backgroundColor = randomNews.impact > 0 ? "#065f46" : "#7f1d1d";
-            document.getElementById('newsTicker').innerText = `🚨 ब्रेकिंग न्यूज़: ${randomNews.text}`;
+            const ticker = document.getElementById('newsTicker');
+            
+            ticker.style.borderColor = randomNews.impact > 0 ? "var(--green)" : "var(--red)";
+            ticker.innerHTML = `📢 <b>मार्केट न्यूज़ चैनल</b><br><br>🚨 ${randomNews.text}<br><br><span style="font-size:0.8rem; color:${randomNews.impact > 0 ? 'var(--green)' : 'var(--red)'}">अनुमानित असर: ${randomNews.impact}%</span>`;
+            
             addLog(`📢 [NEWS]: ${randomNews.text}`);
         }
     }, 15000);
 
-    // 💸 डिविडेंड लूप (हर 10 सेकंड में पैसिव इनकम)
+    // 💸 डिविडेंड लूप (10 सेकंड)
     setInterval(() => {
         let totalDividend = 0;
         stocks.forEach(stock => {
@@ -404,23 +415,20 @@
         });
         if (totalDividend > 0) {
             cash += totalDividend;
-            addLog(`💸 [DIVIDEND]: आपकी होल्डिंग्स से ₹${totalDividend.toFixed(2)} डिविडेंड मिला!`);
+            addLog(`💸 [DIVIDEND]: होल्डिंग्स से ₹${totalDividend.toFixed(2)} डिविडेंड मिला!`);
         }
     }, 10000);
 
     function updateUI() {
         let portfolioValue = 0;
-
         stocks.forEach(stock => {
             portfolioValue += stock.owned * stock.price;
-            
             const priceEl = document.getElementById(`price-${stock.id}`);
             const changeEl = document.getElementById(`change-${stock.id}`);
             const ownedEl = document.getElementById(`owned-${stock.id}`);
             
             if(priceEl) priceEl.innerText = `₹${stock.price.toFixed(2)}`;
             if(ownedEl) ownedEl.innerText = stock.owned;
-            
             if(changeEl) {
                 changeEl.className = stock.change >= 0 ? 'price-up' : 'price-down';
                 changeEl.innerText = `${stock.change >= 0 ? '+' : ''}${stock.change.toFixed(2)}%`;
@@ -428,7 +436,6 @@
         });
 
         const netWorth = cash + portfolioValue + totalFDWithInterest - totalOwedWithInterest;
-        
         document.getElementById('cash').innerText = `₹${cash.toFixed(2)}`;
         document.getElementById('fdDisplay').innerText = `₹${totalFDWithInterest.toFixed(2)}`;
         document.getElementById('loanDisplay').innerText = `₹${totalOwedWithInterest.toFixed(2)}`;
@@ -442,12 +449,12 @@
                 timerDisp.innerText = `🔒 ${fdTimeRemaining}s बाकी`;
                 timerDisp.style.color = "var(--red)";
                 fdBtn.style.backgroundColor = "#b91c1c";
-                fdBtn.innerText = "🪓 समय से पहले तोड़ें (1% Penalty)";
+                fdBtn.innerText = "🪓 समय से पहले तोड़ें (1%)";
             } else {
                 timerDisp.innerText = `✅ मैच्योर`;
                 timerDisp.style.color = "var(--green)";
                 fdBtn.style.backgroundColor = "var(--green)";
-                fdBtn.innerText = "💰 FD पूरी निकालें (0% Penalty)";
+                fdBtn.innerText = "💰 FD पूरी निकालें (0%)";
             }
         } else {
             timerDisp.innerText = "कोई FD नहीं";
@@ -457,100 +464,63 @@
         }
 
         const repayBtn = document.getElementById('repayBtn');
-        if (totalOwedWithInterest > 0) {
-            repayBtn.style.display = "inline-block";
-        } else {
-            repayBtn.style.display = "none";
-        }
+        repayBtn.style.display = totalOwedWithInterest > 0 ? "inline-block" : "none";
     }
 
-    // FD टाइमर चलाने का लॉजिक
     function startFDTimer() {
         if (fdIntervalTracker) clearInterval(fdIntervalTracker);
         fdIntervalTracker = setInterval(() => {
             if (fdTimeRemaining > 0) {
                 fdTimeRemaining--;
                 if (fdTimeRemaining === 0) {
-                    addLog("🎉 [FD MATURED]: समय सीमा समाप्त! अब बिना पेनाल्टी पूरा पैसा विथड्रॉ कर सकते हैं।");
+                    addLog("🎉 [FD MATURED]: समय सीमा समाप्त! अब बिना पेनाल्टी पैसा निकाल सकते हैं।");
                     clearInterval(fdIntervalTracker);
                 }
             }
         }, 1000);
     }
 
-    // 🏦 FD जमा करने का सिस्टम
     function depositFD() {
-        if (totalFDWithInterest > 0) {
-            alert("पहले से एक FD चल रही है भाई! उसे क्लोज होने दो।");
-            return;
-        }
-
+        if (totalFDWithInterest > 0) return alert("पहले से एक FD चल रही है भाई!");
         let selectedAmount = parseFloat(document.getElementById('fdAmountSelect').value);
-
         if (cash >= selectedAmount) {
-            cash -= selectedAmount;
-            principalFD = selectedAmount;
-            totalFDWithInterest = selectedAmount;
-            fdTimeRemaining = 30; 
-
-            addLog(`🏦 [FD DEPOSIT]: ₹${selectedAmount.toLocaleString('en-IN')} की FD चालू की गई!`);
-            startFDTimer();
-            updateUI();
-        } else {
-            alert("चुकानी जाने वाली FD राशि जितना कैश आपके पास नहीं है!");
-        }
+            cash -= selectedAmount; principalFD = selectedAmount; totalFDWithInterest = selectedAmount; fdTimeRemaining = 30; 
+            addLog(`🏦 [FD DEPOSIT]: ₹${selectedAmount.toLocaleString('en-IN')} जमा!`);
+            startFDTimer(); updateUI();
+        } else { alert("कैश कम है भाई!"); }
     }
 
     function withdrawFD() {
         if (totalFDWithInterest <= 0) return alert("बैंक में कोई FD नहीं है!");
-
         let interestEarned = totalFDWithInterest - principalFD;
         let taxAmount = Math.max(0, interestEarned * 0.10); 
         let penaltyAmount = 0;
-
         if (fdTimeRemaining > 0) {
             penaltyAmount = totalFDWithInterest * 0.01;
-            let finalPayout = totalFDWithInterest - taxAmount - penaltyAmount;
-            cash += finalPayout;
-            addLog(`🪓 [PREMATURE]: समय से पहले तोड़ा। जुर्माना: ₹${penaltyAmount.toFixed(2)}, टैक्स: ₹${taxAmount.toFixed(2)}`);
+            cash += (totalFDWithInterest - taxAmount - penaltyAmount);
+            addLog(`🪓 [PREMATURE]: तोड़ी। पेनाल्टी: ₹${penaltyAmount.toFixed(2)}, टैक्स: ₹${taxAmount.toFixed(2)}`);
         } else {
-            let finalPayout = totalFDWithInterest - taxAmount;
-            cash += finalPayout;
-            addLog(`💰 [MATURED]: मैच्योरिटी पूरी हुई! टैक्स: ₹${taxAmount.toFixed(2)} | खाते में आए: ₹${finalPayout.toFixed(2)}`);
+            cash += (totalFDWithInterest - taxAmount);
+            addLog(`💰 [MATURED]: पूरी हुई! टैक्स: ₹${taxAmount.toFixed(2)}`);
         }
-
         if (fdIntervalTracker) clearInterval(fdIntervalTracker);
-        principalFD = 0; totalFDWithInterest = 0; fdTimeRemaining = 0;
-        updateUI();
+        principalFD = 0; totalFDWithInterest = 0; fdTimeRemaining = 0; updateUI();
     }
 
-    // 💰 लोन किस्त (EMI) चुकाने का सिस्टम
-    function getFriendLoan() { 
-        cash += 500000; 
-        totalOwedWithInterest += 500000; 
-        addLog("🤝 [LOAN]: भाई से ₹5,00,000 का उधार लिया।");
-        updateUI(); 
-    }
-
+    function getFriendLoan() { cash += 500000; totalOwedWithInterest += 500000; addLog("🤝 [LOAN]: भाई से ₹5,00,000 उधार लिया।"); updateUI(); }
     function repayEMI() {
         if (totalOwedWithInterest <= 0) return;
-        
         let emiAmount = Math.min(50000, totalOwedWithInterest); 
-
         if (cash >= emiAmount) {
-            cash -= emiAmount;
-            totalOwedWithInterest -= emiAmount;
-            addLog(`💸 [LOAN EMI]: लोन की ₹${emiAmount.toFixed(2)} की किस्त चुकाई गई। बाकी बचा: ₹${totalOwedWithInterest.toFixed(2)}`);
+            cash -= emiAmount; totalOwedWithInterest -= emiAmount;
+            addLog(`💸 [EMI]: ₹${emiAmount.toFixed(2)} चुकाई। बाकी: ₹${totalOwedWithInterest.toFixed(2)}`);
             updateUI();
-        } else {
-            alert("किस्त चुकाने के लिए कम से कम ₹50,000 कैश होना चाहिए!");
-        }
+        } else { alert("किस्त के लिए ₹50,000 कैश चाहिए!"); }
     }
 
-    // ट्रेडिंग फ़ंक्शंस
     function buyStock(index) {
         let qty = parseInt(document.getElementById('globalQty').value);
-        if (isNaN(qty) || qty <= 0) return alert("सही क्वांटिटी डालो!");
+        if (isNaN(qty) || qty <= 0) return alert("सही क्वांटिटी डालो भाई!");
         let stock = stocks[index];
         let totalCost = stock.price * qty;
         if (cash >= totalCost) { cash -= totalCost; stock.owned += qty; updateUI(); } 
@@ -559,15 +529,15 @@
 
     function shortStock(index) {
         let qty = parseInt(document.getElementById('globalQty').value);
-        if (isNaN(qty) || qty <= 0) return alert("सही क्वांटिटी डालो!");
+        if (isNaN(qty) || qty <= 0) return alert("सही क्वांटिटी डालो भाई!");
         let stock = stocks[index];
         cash += stock.price * qty; stock.owned -= qty; updateUI();
     }
 
     function harshadMehtaGamble() {
-        if(cash < 1000) return alert("सट्टा खेलने के लिए कम से कम ₹1,00,000 चाहिए!");
-        if (Math.random() <= 0.75) { cash += (cash * 0.4); addLog("😎 [GAMBLE SUCCESS]: रिस्क है तो इश्क है! तगड़ा मुनाफा!"); } 
-        else { cash = Math.max(100, cash * 0.70); addLog("🚨 [GAMBLE CRASH]: ऑपरेटर ने गेम घुमा दिया! बड़ा नुकसान!"); }
+        if(cash < 1000) return alert("सट्टा के लिए कम से कम ₹1,00,000 चाहिए!");
+        if (Math.random() <= 0.75) { cash += (cash * 0.4); addLog("😎 [GAMBLE]: रिस्क है तो इश्क है! तगड़ा मुनाफा!"); } 
+        else { cash = Math.max(100, cash * 0.70); addLog("🚨 [GAMBLE]: मार्केट क्रैश! बड़ा नुकसान!"); }
         updateUI();
     }
 
@@ -577,12 +547,7 @@
         logBox.scrollTop = logBox.scrollHeight;
     }
 
-    // 🚀 लोड गेम को पहले रन करेंगे
-    window.onload = () => { 
-        initMarket(); 
-        loadGame(); // पुराना डेटा खोज कर लोड करेगा 
-        updateUI(); 
-    };
+    window.onload = () => { initMarket(); loadGame(); updateUI(); };
 </script>
 
 </body>
