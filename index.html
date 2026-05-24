@@ -236,22 +236,22 @@
     let fdIntervalTracker = null;   // टाइमर चलाने के लिए
 
     const stocks = [
-        { id: 'RELIANCE', name: 'Reliance Industries', price: 2450, change: 0, owned: 0 },
-        { id: 'TCS', name: 'Tata Consultancy Services', price: 3950, change: 0, owned: 0 },
-        { id: 'HDFCBANK', name: 'HDFC Bank Ltd', price: 1510, change: 0, owned: 0 },
-        { id: 'INFY', name: 'Infosys Ltd', price: 1420, change: 0, owned: 0 },
-        { id: 'SBI', name: 'State Bank of India', price: 760, change: 0, owned: 0 },
-        { id: 'TATAMOTORS', name: 'Tata Motors Ltd', price: 980, change: 0, owned: 0 },
-        { id: 'ITC', name: 'ITC Cigarette & Food', price: 420, change: 0, owned: 0 },
-        { id: 'ADANIENT', name: 'Adani Enterprises', price: 3150, change: 0, owned: 0 },
-        { id: 'ZOMATO', name: 'Zomato Ltd', price: 190, change: 0, owned: 0 },
-        { id: 'SUZLON', name: 'Suzlon Energy', price: 45, change: 0, owned: 0 }
+        { id: 'RELIANCE', name: 'Reliance Industries', price: 1110, change: 0, owned: 0 },
+        { id: 'TCS', name: 'Tata Consultancy Services', price: 390, change: 0, owned: 0 },
+        { id: 'HDFCBANK', name: 'HDFC Bank Ltd', price: 510, change: 0, owned: 0 },
+        { id: 'INFY', name: 'Infosys Ltd', price: 1400, change: 0, owned: 0 },
+        { id: 'SBI', name: 'State Bank of India', price: 560, change: 0, owned: 0 },
+        { id: 'TATAMOTORS', name: 'Tata Motors Ltd', price: 80, change: 0, owned: 0 },
+        { id: 'ITC', name: 'ITC Cigarette & Food', price: 90, change: 0, owned: 0 },
+        { id: 'ADANIENT', name: 'Adani Enterprises', price: 315, change: 0, owned: 0 },
+        { id: 'ZOMATO', name: 'Zomato Ltd', price: 165, change: 0, owned: 0 },
+        { id: 'SUZLON', name: 'Suzlon Energy', price: 35, change: 0, owned: 0 }
     ];
 
     setInterval(() => {
         // 1. मार्केट मूवमेंट
         stocks.forEach(stock => {
-            let percentChange = (Math.random() - 0.50) * 4; 
+            let percentChange = (Math.random() - 0.30) * 3; 
             stock.price = Math.max(5, stock.price * (1 + percentChange / 100));
             stock.change = percentChange;
         });
